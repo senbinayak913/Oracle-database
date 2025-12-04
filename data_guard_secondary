@@ -1,0 +1,451 @@
+Terminal 2
+[oracle@localhost ~]$ cd /u01/app/oracle/product/19.0.0/dbhome_1/dbs
+[oracle@localhost dbs]$ ll
+total 8
+-rwxr-xr-x. 1 oracle oinstall 3079 May 14  2015 init.ora
+-rw-r-----. 1 oracle oinstall 2048 Dec  4 22:24 orapwprod
+[oracle@localhost dbs]$ mv orapwprod orapwprods
+[oracle@localhost dbs]$ ll
+total 8
+-rwxr-xr-x. 1 oracle oinstall 3079 May 14  2015 init.ora
+-rw-r-----. 1 oracle oinstall 2048 Dec  4 22:24 orapwprods
+[oracle@localhost dbs]$ . oraenv
+ORACLE_SID = [oracle] ? prods
+The Oracle base has been set to /u01/app/oracle
+[oracle@localhost dbs]$ lsnrcl start listener
+bash: lsnrcl: command not found...
+[oracle@localhost dbs]$ cd /u01/app/oracle/product/dbhome_1
+bash: cd: /u01/app/oracle/product/dbhome_1: No such file or directory
+[oracle@localhost dbs]$ cat init.ora
+# 
+# $Header: rdbms/admin/init.ora /main/25 2015/05/14 15:02:30 kasingha Exp $ 
+# 
+# Copyright (c) 1991, 2015, Oracle and/or its affiliates. All rights reserved.
+# NAME
+#   init.ora
+# FUNCTION
+# NOTES
+# MODIFIED
+#     kasingha   05/12/15  - 21041456 - fix copyright header
+#     ysarig     02/01/12  - Renaming flash_recovery_area to
+#                            fast_recovery_area
+#     ysarig     05/14/09  - Updating compatible to 11.2
+#     ysarig     08/13/07  - Fixing the sample for 11g
+#     atsukerm   08/06/98 -  fix for 8.1.
+#     hpiao      06/05/97 -  fix for 803
+#     glavash    05/12/97 -  add oracle_trace_enable comment
+#     hpiao      04/22/97 -  remove ifile=, events=, etc.
+#     alingelb   09/19/94 -  remove vms-specific stuff
+#     dpawson    07/07/93 -  add more comments regarded archive start
+#     maporter   10/29/92 -  Add vms_sga_use_gblpagfile=TRUE 
+#     jloaiza    03/07/92 -  change ALPHA to BETA 
+#     danderso   02/26/92 -  change db_block_cache_protect to _db_block_cache_p
+#     ghallmar   02/03/92 -  db_directory -> db_domain 
+#     maporter   01/12/92 -  merge changes from branch 1.8.308.1 
+#     maporter   12/21/91 -  bug 76493: Add control_files parameter 
+#     wbridge    12/03/91 -  use of %c in archive format is discouraged 
+#     ghallmar   12/02/91 -  add global_names=true, db_directory=us.acme.com 
+#     thayes     11/27/91 -  Change default for cache_clone 
+#     jloaiza    08/13/91 -         merge changes from branch 1.7.100.1 
+#     jloaiza    07/31/91 -         add debug stuff 
+#     rlim       04/29/91 -         removal of char_is_varchar2 
+#   Bridge     03/12/91 - log_allocation no longer exists
+#   Wijaya     02/05/91 - remove obsolete parameters
+#
+##############################################################################
+# Example INIT.ORA file
+#
+# This file is provided by Oracle Corporation as a starting point for
+# customizing the Oracle Database installation for your site. 	 
+#
+# NOTE: The values that are used in this file are example values only.
+# You may want to adjust those values for your specific requirements. 
+# You might also consider using the Database Configuration Assistant 
+# tool (DBCA) to create a server-side initialization parameter file
+# and to size your initial set of tablespaces. See the
+# Oracle Database 2 Day DBA guide for more information.
+###############################################################################
+
+# Change '<ORACLE_BASE>' to point to the oracle base (the one you specify at
+# install time)
+
+db_name='ORCL'
+memory_target=1G
+processes = 150
+audit_file_dest='<ORACLE_BASE>/admin/orcl/adump'
+audit_trail ='db'
+db_block_size=8192
+db_domain=''
+db_recovery_file_dest='<ORACLE_BASE>/fast_recovery_area'
+db_recovery_file_dest_size=2G
+diagnostic_dest='<ORACLE_BASE>'
+dispatchers='(PROTOCOL=TCP) (SERVICE=ORCLXDB)'
+open_cursors=300 
+remote_login_passwordfile='EXCLUSIVE'
+undo_tablespace='UNDOTBS1'
+# You may want to ensure that control files are created on separate physical
+# devices
+control_files = (ora_control1, ora_control2)
+compatible ='11.2.0'
+[oracle@localhost dbs]$ vi initprods.ora
+[oracle@localhost dbs]$ ll
+total 12
+-rwxr-xr-x. 1 oracle oinstall 3079 May 14  2015 init.ora
+-rw-r--r--. 1 oracle oinstall   18 Dec  4 23:42 initprods.ora
+-rw-r-----. 1 oracle oinstall 2048 Dec  4 22:24 orapwprods
+[oracle@localhost dbs]$ sqlplus sys as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Thu Dec 4 23:57:41 2025
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+Enter password: 
+Connected to an idle instance.
+
+SQL> !
+[oracle@localhost dbs]$ mkdir -p /u01/app/oracle/admin/prod/adump
+[oracle@localhost dbs]$ mkdir -p  /u01/app/oracle/oradata/PROD
+[oracle@localhost dbs]$  mkdir -p  /u01/app/oracle/fast_recovery_area/PROD
+[oracle@localhost dbs]$ mkdir -p  /u01/app/oracle/fast_recovery_area/PRODS
+[oracle@localhost dbs]$ vi etc/oratab
+[oracle@localhost dbs]$ vi /etc/oratab
+[oracle@localhost dbs]$ ll
+total 12
+-rwxr-xr-x. 1 oracle oinstall 3079 May 14  2015 init.ora
+-rw-r--r--. 1 oracle oinstall   18 Dec  4 23:42 initprods.ora
+-rw-r-----. 1 oracle oinstall 2048 Dec  4 22:24 orapwprods
+[oracle@localhost dbs]$ cp orapwprods orapwprod
+[oracle@localhost dbs]$ vi initprod.ora
+[oracle@localhost dbs]$ sqlplus sys as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Fri Dec 5 00:10:53 2025
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+Enter password: 
+Connected to an idle instance.
+
+SQL> startup nomount;
+ORACLE instance started.
+
+Total System Global Area  243268216 bytes
+Fixed Size		    8895096 bytes
+Variable Size		  180355072 bytes
+Database Buffers	   50331648 bytes
+Redo Buffers		    3686400 bytes
+SQL> ! rman target sys/oracle@orcl auxiliary sys/oracle@prods
+
+Recovery Manager: Release 19.0.0.0.0 - Production on Fri Dec 5 00:13:00 2025
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle and/or its affiliates.  All rights reserved.
+
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-00554: initialization of internal recovery manager package failed
+RMAN-04005: error from target database: 
+ORA-12154: TNS:could not resolve the connect identifier specified
+
+SQL> !rman target sys/oracle@orcl auxiliary sys/oracle@prods     
+
+Recovery Manager: Release 19.0.0.0.0 - Production on Fri Dec 5 00:14:08 2025
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle and/or its affiliates.  All rights reserved.
+
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-00554: initialization of internal recovery manager package failed
+RMAN-04005: error from target database: 
+ORA-12154: TNS:could not resolve the connect identifier specified
+
+SQL> !rman target sys/oracle@orcl auxiliary sys/oracle@prods
+
+Recovery Manager: Release 19.0.0.0.0 - Production on Fri Dec 5 00:14:43 2025
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle and/or its affiliates.  All rights reserved.
+
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-00554: initialization of internal recovery manager package failed
+RMAN-04005: error from target database: 
+ORA-12154: TNS:could not resolve the connect identifier specified
+
+SQL> !rman target sys/oracle@prod auxiliary sys/oracle@prods
+
+Recovery Manager: Release 19.0.0.0.0 - Production on Fri Dec 5 00:15:57 2025
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle and/or its affiliates.  All rights reserved.
+
+connected to target database: PROD (DBID=630395113)
+connected to auxiliary database: PROD (not mounted)
+
+RMAN> run
+{
+DUPLICATE TARGET DATABASE FOR STANDBY FROM ACTIVE DATABASE
+SPFILE
+PARAMETER_VALUE_CONVERT='prod','prods'
+SET DB_NAME='prod'
+SET DB_UNIQUE_NAME='prods'
+SET STANDBY_FILE_MANAGEMENT='AUTO'
+set audit_file_dest ='/u01/app/oracle/admin/prod/adump'
+set db_recovery_file_dest='/u01/app/oracle/fast_recovery_area'
+set fal_server='prod'
+set control_files='/u01/app/oracle/oradata/PROD/control01.ctl','/u01/app/oracle/fast_recovery_area/PROD/control02.ctl'
+NOFILENAMECHECK;
+}2> 3> 4> 5> 6> 7> 8> 9> 10> 11> 12> 13> 14> 
+15> 
+
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-00558: error encountered while parsing input commands
+RMAN-01009: syntax error: found "end-of-file": expecting one of: "advise, allocate, alter, analyze, associate statistics, audit, backup, begin, @, call, catalog, change, comment, commit, configure, convert, copy, create, crosscheck, declare, delete, delete from, describe, describe catalog, disassociate statistics, drop, drop database, duplicate, execute, explain plan, flashback, flashback table, grant, host, insert, lock, merge, mount, noaudit, open, purge, recover, release, rename, repair, report, reset, restore, resync, revoke, rollback, savepoint, select, send, set, set constraint, set role, set transaction, show, shutdown, sql, startup, switch, "
+RMAN-01007: at line 15 column 1 file: standard input
+
+RMAN> run
+{
+DUPLICATE TARGET DATABASE FOR STANDBY FROM ACTIVE DATABASE
+SPFILE
+PARAMETER_VALUE_CONVERT='prod','prods'
+SET DB_NAME='prod'
+SET DB_UNIQUE_NAME='prods'
+SET STANDBY_FILE_MANAGEMENT='AUTO'
+set audit_file_dest ='/u01/app/oracle/admin/prod/adump'
+set db_recovery_file_dest='/u01/app/oracle/fast_recovery_area'
+set fal_server='prod'
+set control_files='/u01/app/oracle/oradata/PROD/control01.ctl','/u01/app/oracle/fast_recovery_area/PROD/control02.ctl'
+NOFILENAMECHECK;
+}2> 3> 4> 5> 6> 7> 8> 9> 10> 11> 12> 13> 14> 
+15> 
+
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-00558: error encountered while parsing input commands
+RMAN-01009: syntax error: found "end-of-file": expecting one of: "advise, allocate, alter, analyze, associate statistics, audit, backup, begin, @, call, catalog, change, comment, commit, configure, convert, copy, create, crosscheck, declare, delete, delete from, describe, describe catalog, disassociate statistics, drop, drop database, duplicate, execute, explain plan, flashback, flashback table, grant, host, insert, lock, merge, mount, noaudit, open, purge, recover, release, rename, repair, report, reset, restore, resync, revoke, rollback, savepoint, select, send, set, set constraint, set role, set transaction, show, shutdown, sql, startup, switch, "
+RMAN-01007: at line 15 column 1 file: standard input
+
+RMAN> run
+{
+DUPLICATE TARGET DATABASE FOR STANDBY FROM ACTIVE DATABASE
+SPFILE
+PARAMETER_VALUE_CONVERT='prod','prods'
+SET DB_NAME='prod'
+SET DB_UNIQUE_NAME='prods'
+SET STANDBY_FILE_MANAGEMENT='AUTO'
+set audit_file_dest ='/u01/app/oracle/admin/prod/adump'
+set db_recovery_file_dest='/u01/app/oracle/fast_recovery_area'
+set fal_server='prod'
+set control_files='/u01/app/oracle/oradata/PROD/control01.ctl','/u01/app/oracle/fast_recovery_area/PROD/control02.ctl'
+NOFILENAMECHECK;
+}2> 3> 4> 5> 6> 7> 8> 9> 10> 11> 12> 13> 14> 
+
+Starting Duplicate Db at 05-DEC-25
+using target database control file instead of recovery catalog
+allocated channel: ORA_AUX_DISK_1
+channel ORA_AUX_DISK_1: SID=35 device type=DISK
+
+contents of Memory Script:
+{
+   backup as copy reuse
+   passwordfile auxiliary format  '/u01/app/oracle/product/19.0.0/dbhome_1/dbs/orapwprods'   ;
+   restore clone from service  'prod' spfile to 
+ '/u01/app/oracle/product/19.0.0/dbhome_1/dbs/spfileprods.ora';
+   sql clone "alter system set spfile= ''/u01/app/oracle/product/19.0.0/dbhome_1/dbs/spfileprods.ora''";
+}
+executing Memory Script
+
+Starting backup at 05-DEC-25
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=134 device type=DISK
+Finished backup at 05-DEC-25
+
+Starting restore at 05-DEC-25
+using channel ORA_AUX_DISK_1
+
+channel ORA_AUX_DISK_1: starting datafile backup set restore
+channel ORA_AUX_DISK_1: using network backup set from service prod
+channel ORA_AUX_DISK_1: restoring SPFILE
+output file name=/u01/app/oracle/product/19.0.0/dbhome_1/dbs/spfileprods.ora
+channel ORA_AUX_DISK_1: restore complete, elapsed time: 00:00:01
+Finished restore at 05-DEC-25
+
+sql statement: alter system set spfile= ''/u01/app/oracle/product/19.0.0/dbhome_1/dbs/spfileprods.ora''
+
+contents of Memory Script:
+{
+   sql clone "alter system set  dispatchers = 
+ ''(PROTOCOL=TCP) (SERVICE=prodsXDB)'' comment=
+ '''' scope=spfile";
+   sql clone "alter system set  db_name = 
+ ''prod'' comment=
+ '''' scope=spfile";
+   sql clone "alter system set  db_unique_name = 
+ ''prods'' comment=
+ '''' scope=spfile";
+   sql clone "alter system set  STANDBY_FILE_MANAGEMENT = 
+ ''AUTO'' comment=
+ '''' scope=spfile";
+   sql clone "alter system set  audit_file_dest = 
+ ''/u01/app/oracle/admin/prod/adump'' comment=
+ '''' scope=spfile";
+   sql clone "alter system set  db_recovery_file_dest = 
+ ''/u01/app/oracle/fast_recovery_area'' comment=
+ '''' scope=spfile";
+   sql clone "alter system set  fal_server = 
+ ''prod'' comment=
+ '''' scope=spfile";
+   sql clone "alter system set  control_files = 
+ ''/u01/app/oracle/oradata/PROD/control01.ctl'', ''/u01/app/oracle/fast_recovery_area/PROD/control02.ctl'' comment=
+ '''' scope=spfile";
+   shutdown clone immediate;
+   startup clone nomount;
+}
+executing Memory Script
+
+sql statement: alter system set  dispatchers =  ''(PROTOCOL=TCP) (SERVICE=prodsXDB)'' comment= '''' scope=spfile
+
+sql statement: alter system set  db_name =  ''prod'' comment= '''' scope=spfile
+
+sql statement: alter system set  db_unique_name =  ''prods'' comment= '''' scope=spfile
+
+sql statement: alter system set  STANDBY_FILE_MANAGEMENT =  ''AUTO'' comment= '''' scope=spfile
+
+sql statement: alter system set  audit_file_dest =  ''/u01/app/oracle/admin/prod/adump'' comment= '''' scope=spfile
+
+sql statement: alter system set  db_recovery_file_dest =  ''/u01/app/oracle/fast_recovery_area'' comment= '''' scope=spfile
+
+sql statement: alter system set  fal_server =  ''prod'' comment= '''' scope=spfile
+
+sql statement: alter system set  control_files =  ''/u01/app/oracle/oradata/PROD/control01.ctl'', ''/u01/app/oracle/fast_recovery_area/PROD/control02.ctl'' comment= '''' scope=spfile
+
+Oracle instance shut down
+
+connected to auxiliary database (not started)
+Oracle instance started
+
+Total System Global Area    1493168352 bytes
+
+Fixed Size                     8896736 bytes
+Variable Size                872415232 bytes
+Database Buffers             603979776 bytes
+Redo Buffers                   7876608 bytes
+duplicating Online logs to Oracle Managed File (OMF) location
+
+contents of Memory Script:
+{
+   restore clone from service  'prod' standby controlfile;
+}
+executing Memory Script
+
+Starting restore at 05-DEC-25
+allocated channel: ORA_AUX_DISK_1
+channel ORA_AUX_DISK_1: SID=34 device type=DISK
+
+channel ORA_AUX_DISK_1: starting datafile backup set restore
+channel ORA_AUX_DISK_1: using network backup set from service prod
+channel ORA_AUX_DISK_1: restoring control file
+channel ORA_AUX_DISK_1: restore complete, elapsed time: 00:00:02
+output file name=/u01/app/oracle/oradata/PROD/control01.ctl
+output file name=/u01/app/oracle/fast_recovery_area/PROD/control02.ctl
+Finished restore at 05-DEC-25
+
+contents of Memory Script:
+{
+   sql clone 'alter database mount standby database';
+}
+executing Memory Script
+
+sql statement: alter database mount standby database
+RMAN-05538: warning: implicitly using DB_FILE_NAME_CONVERT
+RMAN-05158: WARNING: auxiliary (datafile) file name /u01/app/oracle/oradata/PROD/system01.dbf conflicts with a file used by the target database
+RMAN-05158: WARNING: auxiliary (datafile) file name /u01/app/oracle/oradata/PROD/sysaux01.dbf conflicts with a file used by the target database
+RMAN-05158: WARNING: auxiliary (datafile) file name /u01/app/oracle/oradata/PROD/undotbs01.dbf conflicts with a file used by the target database
+RMAN-05158: WARNING: auxiliary (datafile) file name /u01/app/oracle/oradata/PROD/users01.dbf conflicts with a file used by the target database
+RMAN-05158: WARNING: auxiliary (tempfile) file name /u01/app/oracle/oradata/PROD/temp01.dbf conflicts with a file used by the target database
+
+contents of Memory Script:
+{
+   set newname for tempfile  1 to 
+ "/u01/app/oracle/oradata/PROD/temp01.dbf";
+   switch clone tempfile all;
+   set newname for datafile  1 to 
+ "/u01/app/oracle/oradata/PROD/system01.dbf";
+   set newname for datafile  3 to 
+ "/u01/app/oracle/oradata/PROD/sysaux01.dbf";
+   set newname for datafile  4 to 
+ "/u01/app/oracle/oradata/PROD/undotbs01.dbf";
+   set newname for datafile  7 to 
+ "/u01/app/oracle/oradata/PROD/users01.dbf";
+   restore
+   from  nonsparse   from service 
+ 'prod'   clone database
+   ;
+   sql 'alter system archive log current';
+}
+executing Memory Script
+
+executing command: SET NEWNAME
+
+renamed tempfile 1 to /u01/app/oracle/oradata/PROD/temp01.dbf in control file
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+Starting restore at 05-DEC-25
+using channel ORA_AUX_DISK_1
+
+channel ORA_AUX_DISK_1: starting datafile backup set restore
+channel ORA_AUX_DISK_1: using network backup set from service prod
+channel ORA_AUX_DISK_1: specifying datafile(s) to restore from backup set
+channel ORA_AUX_DISK_1: restoring datafile 00001 to /u01/app/oracle/oradata/PROD/system01.dbf
+channel ORA_AUX_DISK_1: restore complete, elapsed time: 00:00:15
+channel ORA_AUX_DISK_1: starting datafile backup set restore
+channel ORA_AUX_DISK_1: using network backup set from service prod
+channel ORA_AUX_DISK_1: specifying datafile(s) to restore from backup set
+channel ORA_AUX_DISK_1: restoring datafile 00003 to /u01/app/oracle/oradata/PROD/sysaux01.dbf
+channel ORA_AUX_DISK_1: restore complete, elapsed time: 00:00:16
+channel ORA_AUX_DISK_1: starting datafile backup set restore
+channel ORA_AUX_DISK_1: using network backup set from service prod
+channel ORA_AUX_DISK_1: specifying datafile(s) to restore from backup set
+channel ORA_AUX_DISK_1: restoring datafile 00004 to /u01/app/oracle/oradata/PROD/undotbs01.dbf
+channel ORA_AUX_DISK_1: restore complete, elapsed time: 00:00:03
+channel ORA_AUX_DISK_1: starting datafile backup set restore
+channel ORA_AUX_DISK_1: using network backup set from service prod
+channel ORA_AUX_DISK_1: specifying datafile(s) to restore from backup set
+channel ORA_AUX_DISK_1: restoring datafile 00007 to /u01/app/oracle/oradata/PROD/users01.dbf
+channel ORA_AUX_DISK_1: restore complete, elapsed time: 00:00:01
+Finished restore at 05-DEC-25
+
+sql statement: alter system archive log current
+
+contents of Memory Script:
+{
+   switch clone datafile all;
+}
+executing Memory Script
+
+datafile 1 switched to datafile copy
+input datafile copy RECID=1 STAMP=1219018844 file name=/u01/app/oracle/oradata/PROD/system01.dbf
+datafile 3 switched to datafile copy
+input datafile copy RECID=2 STAMP=1219018844 file name=/u01/app/oracle/oradata/PROD/sysaux01.dbf
+datafile 4 switched to datafile copy
+input datafile copy RECID=3 STAMP=1219018844 file name=/u01/app/oracle/oradata/PROD/undotbs01.dbf
+datafile 7 switched to datafile copy
+input datafile copy RECID=4 STAMP=1219018845 file name=/u01/app/oracle/oradata/PROD/users01.dbf
+Finished Duplicate Db at 05-DEC-25
+
+RMAN>     
