@@ -1,0 +1,671 @@
+Terminal 1
+
+[oracle@localhost ~]$ . oraenv
+ORACLE_SID = [oracle] ? prod
+The Oracle base has been set to /u01/app/oracle
+[oracle@localhost ~]$ netmgr
+[oracle@localhost ~]$ tnping prods
+bash: tnping: command not found...
+[oracle@localhost ~]$ lsnrclt start listener
+bash: lsnrclt: command not found...
+[oracle@localhost ~]$ lsnrclt start listener
+bash: lsnrclt: command not found...
+[oracle@localhost ~]$ . oraenv
+ORACLE_SID = [prod] ? prod
+The Oracle base remains unchanged with value /u01/app/oracle
+[oracle@localhost ~]$ lsnrclt start listener
+bash: lsnrclt: command not found...
+[oracle@localhost ~]$ netmgr
+[oracle@localhost ~]$ lsnrctl start listener
+
+LSNRCTL for Linux: Version 19.0.0.0.0 - Production on 04-DEC-2025 21:35:15
+
+Copyright (c) 1991, 2019, Oracle.  All rights reserved.
+
+Starting /u01/app/oracle/product/19.0.0/dbhome_1/bin/tnslsnr: please wait...
+
+TNSLSNR for Linux: Version 19.0.0.0.0 - Production
+System parameter file is /u01/app/oracle/product/19.0.0/dbhome_1/network/admin/listener.ora
+Log messages written to /u01/app/oracle/diag/tnslsnr/localhost/listener/alert/log.xml
+Listening on: (DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=192.168.56.10)(PORT=1521)))
+
+Connecting to (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=192.168.56.10)(PORT=1521)))
+STATUS of the LISTENER
+------------------------
+Alias                     listener
+Version                   TNSLSNR for Linux: Version 19.0.0.0.0 - Production
+Start Date                04-DEC-2025 21:35:16
+Uptime                    0 days 0 hr. 0 min. 0 sec
+Trace Level               off
+Security                  ON: Local OS Authentication
+SNMP                      OFF
+Listener Parameter File   /u01/app/oracle/product/19.0.0/dbhome_1/network/admin/listener.ora
+Listener Log File         /u01/app/oracle/diag/tnslsnr/localhost/listener/alert/log.xml
+Listening Endpoints Summary...
+  (DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=192.168.56.10)(PORT=1521)))
+Services Summary...
+Service "prod" has 1 instance(s).
+  Instance "prod", status UNKNOWN, has 1 handler(s) for this service...
+The command completed successfully
+[oracle@localhost ~]$ tnsping prods
+
+TNS Ping Utility for Linux: Version 19.0.0.0.0 - Production on 04-DEC-2025 21:35:28
+
+Copyright (c) 1997, 2019, Oracle.  All rights reserved.
+
+Used parameter files:
+
+
+Used TNSNAMES adapter to resolve the alias
+Attempting to contact (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.56.11)(PORT = 1521))) (CONNECT_DATA = (SERVICE_NAME = prods)))
+TNS-12543: TNS:destination host unreachable
+[oracle@localhost ~]$ tnsping prod
+
+TNS Ping Utility for Linux: Version 19.0.0.0.0 - Production on 04-DEC-2025 21:36:04
+
+Copyright (c) 1997, 2019, Oracle.  All rights reserved.
+
+Used parameter files:
+
+
+Used TNSNAMES adapter to resolve the alias
+Attempting to contact (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.56.10)(PORT = 1521))) (CONNECT_DATA = (SERVICE_NAME = prod)))
+OK (40 msec)
+[oracle@localhost ~]$ tnsping prods
+
+TNS Ping Utility for Linux: Version 19.0.0.0.0 - Production on 04-DEC-2025 21:41:52
+
+Copyright (c) 1997, 2019, Oracle.  All rights reserved.
+
+Used parameter files:
+
+
+Used TNSNAMES adapter to resolve the alias
+Attempting to contact (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.56.11)(PORT = 1521))) (CONNECT_DATA = (SERVICE_NAME = prods)))
+OK (30 msec)
+[oracle@localhost ~]$ su root
+Password: 
+[root@localhost oracle]# sudo systemctl stop firewalld
+[root@localhost oracle]# sudo systemctl disable firewalld
+Removed symlink /etc/systemd/system/multi-user.target.wants/firewalld.service.
+Removed symlink /etc/systemd/system/dbus-org.fedoraproject.FirewallD1.service.
+[root@localhost oracle]# su oracle
+[oracle@localhost ~]$ tnsping prods
+
+TNS Ping Utility for Linux: Version 19.0.0.0.0 - Production on 04-DEC-2025 21:43:08
+
+Copyright (c) 1997, 2019, Oracle.  All rights reserved.
+
+Used parameter files:
+
+
+Used TNSNAMES adapter to resolve the alias
+Attempting to contact (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.56.11)(PORT = 1521))) (CONNECT_DATA = (SERVICE_NAME = prods)))
+OK (60 msec)
+[oracle@localhost ~]$ lsrnclt reload listener
+bash: lsrnclt: command not found...
+[oracle@localhost ~]$ lsrnctl reload listener
+bash: lsrnctl: command not found...
+[oracle@localhost ~]$ . oraenv
+ORACLE_SID = [prod] ? prod
+The Oracle base remains unchanged with value /u01/app/oracle
+[oracle@localhost ~]$ lsnrclt reload listener
+bash: lsnrclt: command not found...
+[oracle@localhost ~]$ netmgr
+[oracle@localhost ~]$ lsnrclt reload listener
+bash: lsnrclt: command not found...
+[oracle@localhost ~]$ lsnrctl start listener
+
+LSNRCTL for Linux: Version 19.0.0.0.0 - Production on 04-DEC-2025 21:45:43
+
+Copyright (c) 1991, 2019, Oracle.  All rights reserved.
+
+TNS-01106: Listener using listener name listener has already been started
+[oracle@localhost ~]$ lsnrctl reload listener
+
+LSNRCTL for Linux: Version 19.0.0.0.0 - Production on 04-DEC-2025 21:46:00
+
+Copyright (c) 1991, 2019, Oracle.  All rights reserved.
+
+Connecting to (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=192.168.56.10)(PORT=1521)))
+The command completed successfully
+[oracle@localhost ~]$ sqlplus sys as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Thu Dec 4 21:52:49 2025
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+Enter password: 
+Connected to an idle instance.
+
+SQL> startup
+ORACLE instance started.
+
+Total System Global Area 1493168352 bytes
+Fixed Size		    8896736 bytes
+Variable Size		  872415232 bytes
+Database Buffers	  603979776 bytes
+Redo Buffers		    7876608 bytes
+Database mounted.
+Database opened.
+SQL> select log_mode from v$database;
+
+LOG_MODE
+------------
+ARCHIVELOG
+
+SQL> select name,open_mode,database_role from v$database;
+
+NAME	  OPEN_MODE	       DATABASE_ROLE
+--------- -------------------- ----------------
+PROD	  READ WRITE	       PRIMARY
+
+SQL> alter database forece logging;
+alter database forece logging
+                      *
+ERROR at line 1:
+ORA-02231: missing or invalid option to ALTER DATABASE
+
+
+SQL> alter database force logging
+  2  ;
+
+Database altered.
+
+SQL> alter system switch logfile;
+
+System altered.
+
+SQL> alter system set standby_file_management=auto scope=both;
+
+System altered.
+
+SQL> select a.GROUP#, a.THREAD#, a.BYTES/1024/1024, a.MEMBERS, a.SEQUENCE#, a.STATUS, b.TYPE, b.MEMBER from    v$log a, v$logfile b where a.GROUP# = b.GROUP#;
+
+    GROUP#    THREAD# A.BYTES/1024/1024    MEMBERS  SEQUENCE# STATUS
+---------- ---------- ----------------- ---------- ---------- ----------------
+TYPE
+-------
+MEMBER
+--------------------------------------------------------------------------------
+	 3	    1		    200 	 1	    6 ACTIVE
+ONLINE
+/u01/app/oracle/oradata/PROD/redo03.log
+
+	 2	    1		    200 	 1	    5 INACTIVE
+ONLINE
+/u01/app/oracle/oradata/PROD/redo02.log
+
+    GROUP#    THREAD# A.BYTES/1024/1024    MEMBERS  SEQUENCE# STATUS
+---------- ---------- ----------------- ---------- ---------- ----------------
+TYPE
+-------
+MEMBER
+--------------------------------------------------------------------------------
+
+	 1	    1		    200 	 1	    7 CURRENT
+ONLINE
+/u01/app/oracle/oradata/PROD/redo01.log
+
+
+SQL> col MEMBER for a60
+SQL> /
+
+    GROUP#    THREAD# A.BYTES/1024/1024    MEMBERS  SEQUENCE# STATUS
+---------- ---------- ----------------- ---------- ---------- ----------------
+TYPE	MEMBER
+------- ------------------------------------------------------------
+	 3	    1		    200 	 1	    6 ACTIVE
+ONLINE	/u01/app/oracle/oradata/PROD/redo03.log
+
+	 2	    1		    200 	 1	    5 INACTIVE
+ONLINE	/u01/app/oracle/oradata/PROD/redo02.log
+
+	 1	    1		    200 	 1	    7 CURRENT
+ONLINE	/u01/app/oracle/oradata/PROD/redo01.log
+
+
+SQL> col MEMBER for a60
+SQL> /
+
+    GROUP#    THREAD# A.BYTES/1024/1024    MEMBERS  SEQUENCE# STATUS
+---------- ---------- ----------------- ---------- ---------- ----------------
+TYPE	MEMBER
+------- ------------------------------------------------------------
+	 3	    1		    200 	 1	    6 ACTIVE
+ONLINE	/u01/app/oracle/oradata/PROD/redo03.log
+
+	 2	    1		    200 	 1	    5 INACTIVE
+ONLINE	/u01/app/oracle/oradata/PROD/redo02.log
+
+	 1	    1		    200 	 1	    7 CURRENT
+ONLINE	/u01/app/oracle/oradata/PROD/redo01.log
+
+
+SQL> set lin 200 pages 200
+SQL> /
+
+    GROUP#    THREAD# A.BYTES/1024/1024    MEMBERS  SEQUENCE# STATUS	       TYPE    MEMBER
+---------- ---------- ----------------- ---------- ---------- ---------------- ------- ------------------------------------------------------------
+	 3	    1		    200 	 1	    6 INACTIVE	       ONLINE  /u01/app/oracle/oradata/PROD/redo03.log
+	 2	    1		    200 	 1	    5 INACTIVE	       ONLINE  /u01/app/oracle/oradata/PROD/redo02.log
+	 1	    1		    200 	 1	    7 CURRENT	       ONLINE  /u01/app/oracle/oradata/PROD/redo01.log
+
+SQL> 1
+  1* select a.GROUP#, a.THREAD#, a.BYTES/1024/1024, a.MEMBERS, a.SEQUENCE#, a.STATUS, b.TYPE, b.MEMBER from    v$log a, v$logfile b where a.GROUP# = b.GROUP#
+SQL> SQL> ALTER DATABASE ADD STANDBY LOGFILE THREAD 1 GROUP 4 ('/u01/app/oracle/oradata/PROD/standby_redo04.log') SIZE 200M;       
+SP2-0734: unknown command beginning "SQL> ALTER..." - rest of line ignored.
+SQL> ALTER DATABASE ADD STANDBY LOGFILE THREAD 1 GROUP 4 ('/u01/app/oracle/oradata/PROD/standby_redo04.log') SIZE 200M;
+
+Database altered.
+
+SQL> ALTER DATABASE ADD STANDBY LOGFILE THREAD 1 GROUP 5 ('/u01/app/oracle/oradata/PROD/standby_redo05.log') SIZE 200M;
+
+Database altered.
+
+SQL> ORCL/standby_redo04.log') SIZE 200M;
+  
+SQL> ALTER DATABASE ADD STANDBY LOGFILE THREAD 1 GROUP 5 ('/u01/app/oracle/oradata/ORCL/standby_redo05.log') SIZE 200M;
+  
+SQL>SP2-0734: unknown command beginning "ORCL/stand..." - rest of line ignored.
+SQL> SQL> SP2-0734: unknown command beginning "SQL> ALTER..." - rest of line ignored.
+SQL> S    
+SQL> ALTER DATABASE ADD STANDBY LOGFILE THREAD 1 GROUP 6 ('/u01/app/oracle/oradata/PROD/standby_redo06.log') SIZE 200M;
+
+Database altered.
+
+SQL> show paratmer db_name;
+SP2-0158: unknown SHOW option "paratmer"
+SP2-0158: unknown SHOW option "db_name"
+SQL> show parameter db_name;
+
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+db_name 			     string	 prod
+SQL> show parameter db_unique_name;
+
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+db_unique_name			     string	 prod
+SQL> alter system set LOG_ARCHIVE_DEST_2='SERVICE=prodsNOAFFIRM ASYNC VALID_FOR=(ONLINE_LOGFILES,PRIMARY_ROLE) DB_UNIQUE_NAME 
+  2  ;
+alter system set LOG_ARCHIVE_DEST_2='SERVICE=prodsNOAFFIRM ASYNC VALID_FOR=(ONLINE_LOGFILES,PRIMARY_ROLE) DB_UNIQUE_NAME
+                                    *
+ERROR at line 1:
+ORA-01756: quoted string not properly terminated
+
+
+SQL> alter system set LOG_ARCHIVE_DEST_2='SERVICE=prods NOAFFIRM ASYNC VALID_FOR=(ONLINE_LOGFILES,PRIMARY_ROLE) DB_UNIQUE_NAME =prods'; 
+alter system set LOG_ARCHIVE_DEST_2='SERVICE=prods NOAFFIRM ASYNC VALID_FOR=(ONLINE_LOGFILES,PRIMARY_ROLE) DB_UNIQUE_NAME =prods'
+*
+ERROR at line 1:
+ORA-02097: parameter cannot be modified because specified value is invalid
+ORA-16024: parameter LOG_ARCHIVE_DEST_2 cannot be parsed
+
+
+SQL> alter system set LOG_ARCHIVE_DEST_2='SERVICE=prods NOAFFIRM ASYNC VALID_FOR=(ONLINE_LOGFILES,PRIMARY_ROLE) DB_UNIQUE_NAME =prods';
+alter system set LOG_ARCHIVE_DEST_2='SERVICE=prods NOAFFIRM ASYNC VALID_FOR=(ONLINE_LOGFILES,PRIMARY_ROLE) DB_UNIQUE_NAME =prods'
+*
+ERROR at line 1:
+ORA-02097: parameter cannot be modified because specified value is invalid
+ORA-16024: parameter LOG_ARCHIVE_DEST_2 cannot be parsed
+
+
+SQL>  alter system set LOG_ARCHIVE_DEST_2='SERVICE=prods NOAFFIRM ASYNC VALID_FOR=(ONLINE_LOGFILES,PRIMARY_ROLE) DB_UNIQUE_NAME=prods';
+
+System altered.
+
+SQL> alter system set log_archive_dest_state_2=ENABLE;
+
+System altered.
+
+SQL> alter system set LOG_ARCHIVE_CONFIG='DG_CONFIG=(prod,prods)';
+
+System altered.
+
+SQL>  alter system set LOG_ARCHIVE_MAX_PROCESSES=30;
+
+System altered.
+
+SQL> alter system set REMOTE_LOGIN_PASSWORDFILE=exclusive scope=spfile;
+
+System altered.
+
+SQL> alter system set fal_server=PRODS;
+
+System altered.
+
+SQL> alter system set FAL_CLIENT=PROD
+  2  ;
+
+System altered.
+
+SQL> select name,open_mode,database_role,protection_mode from v$database;
+
+NAME	  OPEN_MODE	       DATABASE_ROLE	PROTECTION_MODE
+--------- -------------------- ---------------- --------------------
+PROD	  READ WRITE	       PRIMARY		MAXIMUM PERFORMANCE
+
+SQL> !pwd
+/home/oracle
+
+SQL> !rman target
+
+Argument     Value          Description
+-----------------------------------------------------------------------------
+target       quoted-string  connect-string for target database
+catalog      quoted-string  connect-string for recovery catalog
+auxiliary    quoted-string  connect-string for auxiliary database
+nocatalog    none           if specified, then no recovery catalog
+cmdfile      quoted-string  name of input command file
+log          quoted-string  name of output message log file
+trace        quoted-string  name of output debugging message log file
+append       none           if specified, log is opened in append mode
+debug        optional-args  activate debugging
+msgno        none           show RMAN-nnnn prefix for all messages
+send         quoted-string  send a command to the media manager
+pipe         string         building block for pipe names
+script       string         name of catalog script to execute
+using        list of args   arguments for rman variables
+timeout      integer        number of seconds to wait for pipe input
+checksyntax  none           check the command file for syntax errors
+-----------------------------------------------------------------------------
+Both single and double quotes (' or ") are accepted for a quoted-string.
+Quotes are not required unless the string contains embedded white-space.
+
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-00552: syntax error in command line arguments
+RMAN-01009: syntax error: found "end-of-file": expecting one of: "double-quoted-string, identifier, single-quoted-string, "
+RMAN-01007: at line 0 column 0 file: command line arguments
+
+SQL> !rman target/
+
+Recovery Manager: Release 19.0.0.0.0 - Production on Thu Dec 4 22:50:42 2025
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle and/or its affiliates.  All rights reserved.
+
+connected to target database: PROD (DBID=630395113)
+
+RMAN> list backup
+2> ;
+
+using target database control file instead of recovery catalog
+
+List of Backup Sets
+===================
+
+
+BS Key  Type LV Size       Device Type Elapsed Time Completion Time
+------- ---- -- ---------- ----------- ------------ ---------------
+1       Full    10.20M     DISK        00:00:01     04-DEC-25      
+        BP Key: 1   Status: AVAILABLE  Compressed: NO  Tag: TAG20251204T221311
+        Piece Name: /u01/app/oracle/fast_recovery_area/PROD/autobackup/2025_12_04/o1_mf_s_1219011192_nm3gk08x_.bkp
+  SPFILE Included: Modification time: 04-DEC-25
+  SPFILE db_unique_name: PROD
+  Control File Included: Ckp SCN: 2174235      Ckp time: 04-DEC-25
+
+RMAN> backup database plus archivelog;
+
+
+Starting backup at 04-DEC-25
+current log archived
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=76 device type=DISK
+channel ORA_DISK_1: starting archived log backup set
+channel ORA_DISK_1: specifying archived log(s) in backup set
+input archived log thread=1 sequence=5 RECID=1 STAMP=1219009988
+input archived log thread=1 sequence=6 RECID=2 STAMP=1219010160
+input archived log thread=1 sequence=7 RECID=3 STAMP=1219011145
+input archived log thread=1 sequence=8 RECID=4 STAMP=1219013528
+channel ORA_DISK_1: starting piece 1 at 04-DEC-25
+channel ORA_DISK_1: finished piece 1 at 04-DEC-25
+piece handle=/u01/app/oracle/fast_recovery_area/PROD/backupset/2025_12_04/o1_mf_annnn_TAG20251204T225208_nm3jt14k_.bkp tag=TAG20251204T225208 comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:03
+Finished backup at 04-DEC-25
+
+Starting backup at 04-DEC-25
+using channel ORA_DISK_1
+channel ORA_DISK_1: starting full datafile backup set
+channel ORA_DISK_1: specifying datafile(s) in backup set
+input datafile file number=00001 name=/u01/app/oracle/oradata/PROD/system01.dbf
+input datafile file number=00003 name=/u01/app/oracle/oradata/PROD/sysaux01.dbf
+input datafile file number=00004 name=/u01/app/oracle/oradata/PROD/undotbs01.dbf
+input datafile file number=00007 name=/u01/app/oracle/oradata/PROD/users01.dbf
+channel ORA_DISK_1: starting piece 1 at 04-DEC-25
+channel ORA_DISK_1: finished piece 1 at 04-DEC-25
+piece handle=/u01/app/oracle/fast_recovery_area/PROD/backupset/2025_12_04/o1_mf_nnndf_TAG20251204T225212_nm3jt4y6_.bkp tag=TAG20251204T225212 comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:15
+Finished backup at 04-DEC-25
+
+Starting backup at 04-DEC-25
+current log archived
+using channel ORA_DISK_1
+channel ORA_DISK_1: starting archived log backup set
+channel ORA_DISK_1: specifying archived log(s) in backup set
+input archived log thread=1 sequence=9 RECID=5 STAMP=1219013548
+channel ORA_DISK_1: starting piece 1 at 04-DEC-25
+channel ORA_DISK_1: finished piece 1 at 04-DEC-25
+piece handle=/u01/app/oracle/fast_recovery_area/PROD/backupset/2025_12_04/o1_mf_annnn_TAG20251204T225228_nm3jtnkh_.bkp tag=TAG20251204T225228 comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:01
+Finished backup at 04-DEC-25
+
+Starting Control File and SPFILE Autobackup at 04-DEC-25
+piece handle=/u01/app/oracle/fast_recovery_area/PROD/autobackup/2025_12_04/o1_mf_s_1219013549_nm3jtp4j_.bkp comment=NONE
+Finished Control File and SPFILE Autobackup at 04-DEC-25
+
+RMAN> lisk backup
+
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-00558: error encountered while parsing input commands
+RMAN-01009: syntax error: found "identifier": expecting one of: "advise, allocate, alter, analyze, associate statistics, audit, backup, begin, @, call, catalog, change, comment, commit, configure, connect, convert, copy, create, create catalog, create global, create or replace global, create or replace script, create script, crosscheck, declare, delete, delete from, describe, describe catalog, disassociate statistics, drop, drop catalog, drop database, duplicate, exit, explain plan, flashback, flashback table, grant, grant catalog, grant register, host, import, insert, list, lock, merge, mount, noaudit, open, print, purge, quit, recover, register, release"
+RMAN-01008: the bad identifier was: lisk
+RMAN-01007: at line 1 column 1 file: standard input
+
+RMAN> list backup;
+
+
+List of Backup Sets
+===================
+
+
+BS Key  Type LV Size       Device Type Elapsed Time Completion Time
+------- ---- -- ---------- ----------- ------------ ---------------
+1       Full    10.20M     DISK        00:00:01     04-DEC-25      
+        BP Key: 1   Status: AVAILABLE  Compressed: NO  Tag: TAG20251204T221311
+        Piece Name: /u01/app/oracle/fast_recovery_area/PROD/autobackup/2025_12_04/o1_mf_s_1219011192_nm3gk08x_.bkp
+  SPFILE Included: Modification time: 04-DEC-25
+  SPFILE db_unique_name: PROD
+  Control File Included: Ckp SCN: 2174235      Ckp time: 04-DEC-25
+
+BS Key  Size       Device Type Elapsed Time Completion Time
+------- ---------- ----------- ------------ ---------------
+2       254.93M    DISK        00:00:02     04-DEC-25      
+        BP Key: 2   Status: AVAILABLE  Compressed: NO  Tag: TAG20251204T225208
+        Piece Name: /u01/app/oracle/fast_recovery_area/PROD/backupset/2025_12_04/o1_mf_annnn_TAG20251204T225208_nm3jt14k_.bkp
+
+  List of Archived Logs in backup set 2
+  Thrd Seq     Low SCN    Low Time  Next SCN   Next Time
+  ---- ------- ---------- --------- ---------- ---------
+  1    5       2011379    30-NOV-25 2132244    04-DEC-25
+  1    6       2132244    04-DEC-25 2133417    04-DEC-25
+  1    7       2133417    04-DEC-25 2174148    04-DEC-25
+  1    8       2174148    04-DEC-25 2179453    04-DEC-25
+
+BS Key  Type LV Size       Device Type Elapsed Time Completion Time
+------- ---- -- ---------- ----------- ------------ ---------------
+3       Full    1.15G      DISK        00:00:08     04-DEC-25      
+        BP Key: 3   Status: AVAILABLE  Compressed: NO  Tag: TAG20251204T225212
+        Piece Name: /u01/app/oracle/fast_recovery_area/PROD/backupset/2025_12_04/o1_mf_nnndf_TAG20251204T225212_nm3jt4y6_.bkp
+  List of Datafiles in backup set 3
+  File LV Type Ckp SCN    Ckp Time  Abs Fuz SCN Sparse Name
+  ---- -- ---- ---------- --------- ----------- ------ ----
+  1       Full 2179479    04-DEC-25              NO    /u01/app/oracle/oradata/PROD/system01.dbf
+  3       Full 2179479    04-DEC-25              NO    /u01/app/oracle/oradata/PROD/sysaux01.dbf
+  4       Full 2179479    04-DEC-25              NO    /u01/app/oracle/oradata/PROD/undotbs01.dbf
+  7       Full 2179479    04-DEC-25              NO    /u01/app/oracle/oradata/PROD/users01.dbf
+
+BS Key  Size       Device Type Elapsed Time Completion Time
+------- ---------- ----------- ------------ ---------------
+4       14.00K     DISK        00:00:00     04-DEC-25      
+        BP Key: 4   Status: AVAILABLE  Compressed: NO  Tag: TAG20251204T225228
+        Piece Name: /u01/app/oracle/fast_recovery_area/PROD/backupset/2025_12_04/o1_mf_annnn_TAG20251204T225228_nm3jtnkh_.bkp
+
+  List of Archived Logs in backup set 4
+  Thrd Seq     Low SCN    Low Time  Next SCN   Next Time
+  ---- ------- ---------- --------- ---------- ---------
+  1    9       2179453    04-DEC-25 2179518    04-DEC-25
+
+BS Key  Type LV Size       Device Type Elapsed Time Completion Time
+------- ---- -- ---------- ----------- ------------ ---------------
+5       Full    10.20M     DISK        00:00:01     04-DEC-25      
+        BP Key: 5   Status: AVAILABLE  Compressed: NO  Tag: TAG20251204T225229
+        Piece Name: /u01/app/oracle/fast_recovery_area/PROD/autobackup/2025_12_04/o1_mf_s_1219013549_nm3jtp4j_.bkp
+  SPFILE Included: Modification time: 04-DEC-25
+  SPFILE db_unique_name: PROD
+  Control File Included: Ckp SCN: 2179533      Ckp time: 04-DEC-25
+
+RMAN> delete backup;
+
+using channel ORA_DISK_1
+
+List of Backup Pieces
+BP Key  BS Key  Pc# Cp# Status      Device Type Piece Name
+------- ------- --- --- ----------- ----------- ----------
+1       1       1   1   AVAILABLE   DISK        /u01/app/oracle/fast_recovery_area/PROD/autobackup/2025_12_04/o1_mf_s_1219011192_nm3gk08x_.bkp
+2       2       1   1   AVAILABLE   DISK        /u01/app/oracle/fast_recovery_area/PROD/backupset/2025_12_04/o1_mf_annnn_TAG20251204T225208_nm3jt14k_.bkp
+3       3       1   1   AVAILABLE   DISK        /u01/app/oracle/fast_recovery_area/PROD/backupset/2025_12_04/o1_mf_nnndf_TAG20251204T225212_nm3jt4y6_.bkp
+4       4       1   1   AVAILABLE   DISK        /u01/app/oracle/fast_recovery_area/PROD/backupset/2025_12_04/o1_mf_annnn_TAG20251204T225228_nm3jtnkh_.bkp
+5       5       1   1   AVAILABLE   DISK        /u01/app/oracle/fast_recovery_area/PROD/autobackup/2025_12_04/o1_mf_s_1219013549_nm3jtp4j_.bkp
+
+Do you really want to delete the above objects (enter YES or NO)? yes
+deleted backup piece
+backup piece handle=/u01/app/oracle/fast_recovery_area/PROD/autobackup/2025_12_04/o1_mf_s_1219011192_nm3gk08x_.bkp RECID=1 STAMP=1219011192
+deleted backup piece
+backup piece handle=/u01/app/oracle/fast_recovery_area/PROD/backupset/2025_12_04/o1_mf_annnn_TAG20251204T225208_nm3jt14k_.bkp RECID=2 STAMP=1219013529
+deleted backup piece
+backup piece handle=/u01/app/oracle/fast_recovery_area/PROD/backupset/2025_12_04/o1_mf_nnndf_TAG20251204T225212_nm3jt4y6_.bkp RECID=3 STAMP=1219013532
+deleted backup piece
+backup piece handle=/u01/app/oracle/fast_recovery_area/PROD/backupset/2025_12_04/o1_mf_annnn_TAG20251204T225228_nm3jtnkh_.bkp RECID=4 STAMP=1219013548
+deleted backup piece
+backup piece handle=/u01/app/oracle/fast_recovery_area/PROD/autobackup/2025_12_04/o1_mf_s_1219013549_nm3jtp4j_.bkp RECID=5 STAMP=1219013550
+Deleted 5 objects
+
+
+RMAN> list backup
+2> ;
+
+specification does not match any backup in the repository
+
+RMAN> backup database plus archivelog;
+
+
+Starting backup at 04-DEC-25
+current log archived
+using channel ORA_DISK_1
+channel ORA_DISK_1: starting archived log backup set
+channel ORA_DISK_1: specifying archived log(s) in backup set
+input archived log thread=1 sequence=5 RECID=1 STAMP=1219009988
+input archived log thread=1 sequence=6 RECID=2 STAMP=1219010160
+input archived log thread=1 sequence=7 RECID=3 STAMP=1219011145
+input archived log thread=1 sequence=8 RECID=4 STAMP=1219013528
+input archived log thread=1 sequence=9 RECID=5 STAMP=1219013548
+input archived log thread=1 sequence=10 RECID=6 STAMP=1219015396
+channel ORA_DISK_1: starting piece 1 at 04-DEC-25
+channel ORA_DISK_1: finished piece 1 at 04-DEC-25
+piece handle=/u01/app/oracle/fast_recovery_area/PROD/backupset/2025_12_04/o1_mf_annnn_TAG20251204T232316_nm3lndgs_.bkp tag=TAG20251204T232316 comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:03
+Finished backup at 04-DEC-25
+
+Starting backup at 04-DEC-25
+using channel ORA_DISK_1
+channel ORA_DISK_1: starting full datafile backup set
+channel ORA_DISK_1: specifying datafile(s) in backup set
+input datafile file number=00001 name=/u01/app/oracle/oradata/PROD/system01.dbf
+input datafile file number=00003 name=/u01/app/oracle/oradata/PROD/sysaux01.dbf
+input datafile file number=00004 name=/u01/app/oracle/oradata/PROD/undotbs01.dbf
+input datafile file number=00007 name=/u01/app/oracle/oradata/PROD/users01.dbf
+channel ORA_DISK_1: starting piece 1 at 04-DEC-25
+channel ORA_DISK_1: finished piece 1 at 04-DEC-25
+piece handle=/u01/app/oracle/fast_recovery_area/PROD/backupset/2025_12_04/o1_mf_nnndf_TAG20251204T232319_nm3lnjc5_.bkp tag=TAG20251204T232319 comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:15
+Finished backup at 04-DEC-25
+
+Starting backup at 04-DEC-25
+current log archived
+using channel ORA_DISK_1
+channel ORA_DISK_1: starting archived log backup set
+channel ORA_DISK_1: specifying archived log(s) in backup set
+input archived log thread=1 sequence=11 RECID=7 STAMP=1219015415
+channel ORA_DISK_1: starting piece 1 at 04-DEC-25
+channel ORA_DISK_1: finished piece 1 at 04-DEC-25
+piece handle=/u01/app/oracle/fast_recovery_area/PROD/backupset/2025_12_04/o1_mf_annnn_TAG20251204T232336_nm3lo095_.bkp tag=TAG20251204T232336 comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:01
+Finished backup at 04-DEC-25
+
+Starting Control File and SPFILE Autobackup at 04-DEC-25
+piece handle=/u01/app/oracle/fast_recovery_area/PROD/autobackup/2025_12_04/o1_mf_s_1219015417_nm3lo1vk_.bkp comment=NONE
+Finished Control File and SPFILE Autobackup at 04-DEC-25
+
+RMAN> select max(sequence#) from v$archived_log;
+
+MAX(SEQUENCE#)
+--------------
+            11
+
+RMAN> !
+
+RMAN-00571: ===========================================================
+RMAN-00569: =============== ERROR MESSAGE STACK FOLLOWS ===============
+RMAN-00571: ===========================================================
+RMAN-00558: error encountered while parsing input commands
+RMAN-01006: error signaled during parse
+RMAN-02001: unrecognized punctuation symbol "!"
+
+RMAN> exit
+
+
+Recovery Manager complete.
+
+SQL> select max(sequence#) from v$archived_log;
+
+MAX(SEQUENCE#)
+--------------
+	    11
+
+SQL> 
+
+Terminal 2
+[oracle@localhost ~]$ cd /u01/app/oracle/
+admin/              audit/              cfgtoollogs/        checkpoints/        diag/               fast_recovery_area/ oradata/            product/            
+[oracle@localhost ~]$ cd /u01/app/oracle/product/19.0.0/dbs
+bash: cd: /u01/app/oracle/product/19.0.0/dbs: No such file or directory
+[oracle@localhost ~]$  cd /u01/app/oracle/product/
+[oracle@localhost product]$ ll
+total 0
+drwxr-xr-x. 3 oracle oinstall 22 Nov 30 15:22 19.0.0
+[oracle@localhost product]$ cd 19.0.0/dbhome_1/
+[oracle@localhost dbhome_1]$ cd dbs
+[oracle@localhost dbs]$ ll
+total 10372
+-rw-rw----. 1 oracle oinstall     1544 Dec  4 21:53 hc_prod.dat
+-rwxr-xr-x. 1 oracle oinstall     3079 May 14  2015 init.ora
+-rw-r-----. 1 oracle oinstall       24 Nov 30 15:57 lkPROD
+-rw-r-----. 1 oracle oinstall     2048 Nov 30 15:59 orapwprod
+-rw-r-----. 1 oracle oinstall 10600448 Dec  4 22:13 snapcf_prod.f
+-rw-r-----. 1 oracle oinstall     3584 Dec  4 22:15 spfileprod.ora
+[oracle@localhost dbs]$ scp orapwprod oracle@192.168.56.11:/u01/app/oracle/product/19.0.0/dbhome_1/dbs
+The authenticity of host '192.168.56.11 (192.168.56.11)' can't be established.
+ECDSA key fingerprint is SHA256:wdyUTzJ1V5bEY0VUWp31ry/LeILQM+mIj/eootWI7jY.
+ECDSA key fingerprint is MD5:3f:c7:9f:50:47:5d:7e:2a:74:3f:b9:bd:f0:63:71:c0.
+Are you sure you want to continue connecting (yes/no)? y
+Please type 'yes' or 'no': yes
+Warning: Permanently added '192.168.56.11' (ECDSA) to the list of known hosts.
+oracle@192.168.56.11's password: 
+orapwprod                                                                                                                                                                        100% 2048     1.1MB/s   00:00    
+[oracle@localhost dbs]$ 
