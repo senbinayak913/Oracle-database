@@ -449,3 +449,145 @@ input datafile copy RECID=4 STAMP=1219018845 file name=/u01/app/oracle/oradata/P
 Finished Duplicate Db at 05-DEC-25
 
 RMAN>     
+
+RMAN> exit
+
+
+Recovery Manager complete.
+
+SQL> sqlplus sys as sysdba
+SP2-0734: unknown command beginning "sqlplus sy..." - rest of line ignored.
+SQL> select name,open_mode,database_role,protection_mode from v$database;
+select name,open_mode,database_role,protection_mode from v$database
+*
+ERROR at line 1:
+ORA-03135: connection lost contact
+Process ID: 14132
+Session ID: 1 Serial number: 18949
+
+
+SQL> !
+[oracle@localhost dbs]$ sqlplus sys as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Fri Dec 5 00:48:19 2025
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+Enter password: 
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> select name,open_mode,database_role,protection_mode from v$database;
+
+NAME	  OPEN_MODE	       DATABASE_ROLE	PROTECTION_MODE
+--------- -------------------- ---------------- --------------------
+PROD	  MOUNTED	       PHYSICAL STANDBY MAXIMUM PERFORMANCE
+
+SQL> recover managed  standby database disconnect from session;
+Media recovery complete.
+SQL> recover managed  standby database cancel;
+Media recovery complete.
+SQL> alter database open;
+
+Database altered.
+
+SQL> select name,open_mode,database_role,protection_mode from v$database;
+
+NAME	  OPEN_MODE	       DATABASE_ROLE	PROTECTION_MODE
+--------- -------------------- ---------------- --------------------
+PROD	  READ ONLY	       PHYSICAL STANDBY MAXIMUM PERFORMANCE
+
+SQL> recover managed  standby database disconnect from session;
+Media recovery complete.
+SQL> select max(sequence#) from v$archived_log;
+
+MAX(SEQUENCE#)
+--------------
+	    12
+
+SQL>  SELECT * FROM V$ARCHIVE_GAP;
+
+no rows selected
+
+SQL>  select message from v$dataguard_status;
+
+MESSAGE
+--------------------------------------------------------------------------------
+Redo network throttle feature is disabled at mount time
+STARTING ARCH PROCESSES
+ARC0: Archival started
+STARTING ARCH PROCESSES COMPLETE
+Becoming a 'no FAL' ARCH
+Gap Manager starting
+STARTING ARCH PROCESSES
+Archiving previously deferred ORLs
+ARC1: Archival started
+ARC2: Archival started
+ARC3: Archival started
+
+MESSAGE
+--------------------------------------------------------------------------------
+ARC4: Archival started
+ARC5: Archival started
+ARC6: Archival started
+ARC7: Archival started
+ARC8: Archival started
+ARC9: Archival started
+ARCa: Archival started
+ARCb: Archival started
+ARCc: Archival started
+ARCd: Archival started
+ARCe: Archival started
+
+MESSAGE
+--------------------------------------------------------------------------------
+ARCf: Archival started
+ARCg: Archival started
+ARCh: Archival started
+ARCi: Archival started
+ARCj: Archival started
+ARCk: Archival started
+ARCl: Archival started
+ARCm: Archival started
+ARCn: Archival started
+ARCo: Archival started
+ARCp: Archival started
+
+MESSAGE
+--------------------------------------------------------------------------------
+ARCq: Archival started
+ARCr: Archival started
+ARCs: Archival started
+ARCt: Archival started
+STARTING ARCH PROCESSES COMPLETE
+Primary database is in MAXIMUM PERFORMANCE mode
+Selected LNO:4 for T-1.S-13 dbid 630395113 branch 1218556780
+Opened log for T-1.S-12 dbid 630395113 branch 1218556780
+Attempt to start background Managed Standby Recovery process
+Background Managed Standby Recovery process started
+Managed Standby Recovery starting Real Time Apply
+
+MESSAGE
+--------------------------------------------------------------------------------
+Media Recovery Log /u01/app/oracle/fast_recovery_area/PRODS/archivelog/2025_12_0
+5/o1_mf_1_12_nm3p8nt2_.arc
+
+Media Recovery Waiting for T-1.S-13 (in transit)
+MRP0: Background Media Recovery cancelled with status 16037
+Managed Standby Recovery not using Real Time Apply
+Background Media Recovery process shutdown
+Managed Standby Recovery Canceled
+Attempt to start background Managed Standby Recovery process
+Background Managed Standby Recovery process started
+Managed Standby Recovery starting Real Time Apply
+
+MESSAGE
+--------------------------------------------------------------------------------
+Media Recovery Waiting for T-1.S-13 (in transit)
+
+54 rows selected.
+
+SQL> 
