@@ -1,0 +1,39 @@
+SQL> select max(sequence#) from v$archived_log;
+
+MAX(SEQUENCE#)
+--------------
+	    14
+
+SQL> SELECT protection_mode FROM v$database;
+
+PROTECTION_MODE
+--------------------
+MAXIMUM PERFORMANCE
+
+SQL> ;
+  1* SELECT protection_mode FROM v$database
+SQL> ;
+  1* SELECT protection_mode FROM v$database
+SQL> SELECT protection_mode FROM v$database;
+
+PROTECTION_MODE
+--------------------
+MAXIMUM PERFORMANCE
+
+SQL> select name, open_mode from v$database;
+
+NAME	  OPEN_MODE
+--------- --------------------
+PROD	  READ WRITE
+
+SQL> select name, open_mode from v$database;
+
+NAME	  OPEN_MODE
+--------- --------------------
+PROD	  READ WRITE
+
+SQL> select name, open_mode from v$database;
+
+NAME	  OPEN_MODE
+--------- --------------------
+PROD	  READ WRITE
