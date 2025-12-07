@@ -1,0 +1,241 @@
+terminal 1
+[oracle@localhost ~]$ . oraenv
+ORACLE_SID = [oracle] ? prods
+The Oracle base has been set to /u01/app/oracle
+[oracle@localhost ~]$ sqlplus sys as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Sun Dec 7 21:55:58 2025
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+Enter password: 
+Connected to an idle instance.
+
+SQL> startup
+ORACLE instance started.
+
+Total System Global Area 1493168352 bytes
+Fixed Size		    8896736 bytes
+Variable Size		 1073741824 bytes
+Database Buffers	  402653184 bytes
+Redo Buffers		    7876608 bytes
+Database mounted.
+Database opened.
+SQL>  select max(sequence#) from v$archived_log;
+
+MAX(SEQUENCE#)
+--------------
+	    15
+
+SQL> select name , open_mode from v$database;
+
+NAME	  OPEN_MODE
+--------- --------------------
+PROD	  READ ONLY
+
+SQL>  recover managed  standby database disconnect from session;
+Media recovery complete.
+SQL> select name , open_mode from v$database
+  2  ;
+
+NAME	  OPEN_MODE
+--------- --------------------
+PROD	  READ ONLY WITH APPLY
+
+SQL> !                        
+[oracle@localhost ~]$ rlwrap sqlplus sys as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Sun Dec 7 22:01:08 2025
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+Enter password: 
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> select name , open_mode, protection_mode from v$database;
+
+NAME	  OPEN_MODE	       PROTECTION_MODE
+--------- -------------------- --------------------
+PROD	  READ ONLY WITH APPLY MAXIMUM PERFORMANCE
+
+SQL> alter system set log_archive_dest_2='';
+
+System altered.
+
+SQL> shutdown immediate;
+Database closed.
+Database dismounted.
+ORACLE instance shut down.
+SQL> startup mount
+ORACLE instance started.
+
+Total System Global Area 1493168352 bytes
+Fixed Size		    8896736 bytes
+Variable Size		 1124073472 bytes
+Database Buffers	  352321536 bytes
+Redo Buffers		    7876608 bytes
+Database mounted.
+SQL> alter database set standby database to maximize availabilty;
+alter database set standby database to maximize availabilty
+                                                *
+ERROR at line 1:
+ORA-02231: missing or invalid option to ALTER DATABASE
+
+
+SQL> alter database set standby database to maximize availability;
+
+Database altered.
+
+SQL> alter database open;
+
+Database altered.
+
+SQL> select protection_mode from v$database;
+
+PROTECTION_MODE
+--------------------
+MAXIMUM AVAILABILITY
+
+SQL> select max(sequence#) from v$archived_log;
+
+MAX(SEQUENCE#)
+--------------
+	    21
+
+SQL> select name,open_mode from v$database;
+
+NAME	  OPEN_MODE
+--------- --------------------
+PROD	  READ ONLY
+
+SQL> recover managed  standby database disconnect from session;
+Media recovery complete.
+SQL> select name,open_mode from v$database;
+
+NAME	  OPEN_MODE
+--------- --------------------
+PROD	  READ ONLY WITH APPLY
+
+SQL> conn scott/tiger
+Connected.
+SQL> select * from tab;
+
+TNAME
+--------------------------------------------------------------------------------
+TABTYPE        CLUSTERID
+------------- ----------
+DEPT
+TABLE
+
+EMP
+TABLE
+
+BONUS
+TABLE
+
+
+TNAME
+--------------------------------------------------------------------------------
+TABTYPE        CLUSTERID
+------------- ----------
+SALGRADE
+TABLE
+
+T1
+TABLE
+
+
+SQL> desc t1
+ Name					   Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ ID					   NOT NULL NUMBER
+ NAME						    VARCHAR2(50)
+ ADDREESS					    VARCHAR2(100)
+
+SQL> select * from t1;
+
+no rows selected
+
+SQL> /
+
+	ID NAME
+---------- --------------------------------------------------
+ADDREESS
+--------------------------------------------------------------------------------
+	 1 Demo1
+Delhi
+
+	 2 Demo2
+Kolkata
+
+	 3 Demo3
+Mumbai
+
+
+	ID NAME
+---------- --------------------------------------------------
+ADDREESS
+--------------------------------------------------------------------------------
+	 4 Demo4
+salt_lake
+
+
+SQL> set line 200 pages 200
+SQL> select max(sequence#) from v$archived_log;
+select max(sequence#) from v$archived_log
+                           *
+ERROR at line 1:
+ORA-00942: table or view does not exist
+
+
+SQL> conn sys as sysdba
+
+Connected.
+SQL> select max(sequence#) from v$archived_log;
+
+MAX(SEQUENCE#)
+--------------
+	    21
+
+SQL> 
+SQL> select max(sequence#) from v$archived_log;
+
+MAX(SEQUENCE#)
+--------------
+	    21
+
+SQL> select name,open_mode from v$database;
+
+NAME	  OPEN_MODE
+--------- --------------------
+PROD	  READ ONLY WITH APPLY
+
+SQL> select * from scott.t1;
+
+	ID NAME 					      ADDREESS
+---------- -------------------------------------------------- ----------------------------------------------------------------------------------------------------
+	 1 Demo1					      Delhi
+	 2 Demo12					      Kolkata
+	 3 Demo13					      Mumbai
+	 4 Demo4					      salt_lake
+
+SQL> /
+
+	ID NAME 					      ADDREESS									 PHNO
+---------- -------------------------------------------------- ---------------------------------------------------------------------------------------------------- ----------
+	 1 Demo1					      Delhi	 7598
+	 2 Demo12					      Kolkata 7591
+	 3 Demo13					      Mumbai 7593
+	 4 Demo4					      salt_lake 									 7594
+
+SQL> select name,open_mode from v$database;
+
+NAME	  OPEN_MODE
+--------- --------------------
+PROD	  READ ONLY WITH APPLY
+
