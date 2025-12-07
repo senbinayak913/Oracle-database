@@ -1,0 +1,86 @@
+SQL> conn sys as sysdba
+
+Connected.
+SQL> shutdown immediate
+Database closed.
+Database dismounted.
+ORACLE instance shut down.
+SQL> startup mount
+ORACLE instance started.
+
+Total System Global Area 1493168352 bytes
+Fixed Size		    8896736 bytes
+Variable Size		 1241513984 bytes
+Database Buffers	  234881024 bytes
+Redo Buffers		    7876608 bytes
+Database mounted.
+SQL> alter databaset set standby database to maximize protection;
+alter databaset set standby database to maximize protection
+      *
+ERROR at line 1:
+ORA-00940: invalid ALTER command
+
+
+SQL> alter database set standby database to maximize protection;
+
+Database altered.
+
+SQL> alter database open;
+
+Database altered.
+
+SQL> select protection_mode from v$database;
+
+PROTECTION_MODE
+--------------------
+MAXIMUM PROTECTION
+
+SQL> conn scott/tiger
+Connected.
+SQL> desc t1;
+ Name									   Null?    Type
+ ----------------------------------------------------------------------------------------------------------------- -------- ----------------------------------------------------------------------------
+ ID									   NOT NULL NUMBER
+ NAME									    VARCHAR2(50)
+ ADDREESS								    VARCHAR2(100)
+ PHNO									    NUMBER(38)
+
+SQL> insert into t1 values(5,'Demo5','Kolkata',1256);
+
+1 row created.
+
+SQL> commit;
+
+Commit complete.
+
+SQL> update t1 set address='Puri' where id=5;
+update t1 set address='Puri' where id=5
+              *
+ERROR at line 1:
+ORA-00904: "ADDRESS": invalid identifier
+
+
+SQL> update t1 set ADDREES ='Puri' where id=5;
+update t1 set ADDREES ='Puri' where id=5
+              *
+ERROR at line 1:
+ORA-00904: "ADDREES": invalid identifier
+
+
+SQL> update t1 set name='Demo15' where id=5;
+
+1 row updated.
+
+SQL> commit;
+
+Commit complete.
+
+SQL> insert into t1 values(6,'Demo6','Due',5566);
+
+1 row created.
+
+SQL> commit;
+
+Commit complete.
+
+SQL> 
