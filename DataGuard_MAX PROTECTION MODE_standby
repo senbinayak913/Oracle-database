@@ -1,0 +1,138 @@
+SQL> select name,open_mode from v$database;
+
+NAME	  OPEN_MODE
+--------- --------------------
+PROD	  READ ONLY WITH APPLY
+
+SQL> shutdown immediate
+Database closed.
+Database dismounted.
+ORACLE instance shut down.
+SQL> startup mount
+ORACLE instance started.
+
+Total System Global Area 1493168352 bytes
+Fixed Size		    8896736 bytes
+Variable Size		 1140850688 bytes
+Database Buffers	  335544320 bytes
+Redo Buffers		    7876608 bytes
+Database mounted.
+SQL> select database set standby database to maximize availability;
+select database set standby database to maximize availability
+                *
+ERROR at line 1:
+ORA-00936: missing expression
+
+
+SQL> alter database set standby database to maximize availability;
+
+Database altered.
+
+SQL> alter database open
+  2  ;
+
+Database altered.
+
+SQL> select protection_mode from v$database;
+
+PROTECTION_MODE
+--------------------
+MAXIMUM AVAILABILITY
+
+SQL> select protection_mode from v$database;
+
+PROTECTION_MODE
+--------------------
+MAXIMUM AVAILABILITY
+
+SQL> select name,open_mode from v$database;
+
+NAME	  OPEN_MODE
+--------- --------------------
+PROD	  READ ONLY
+
+SQL> conn scott/tiger
+Connected.
+SQL> select * from t1;
+
+	ID NAME 					      ADDREESS													 PHNO
+---------- -------------------------------------------------- ---------------------------------------------------------------------------------------------------- ----------
+	 1 Demo1					      Delhi													 7598
+	 2 Demo12					      Kolkata													 7591
+	 3 Demo13					      Mumbai													 7593
+	 4 Demo4					      salt_lake 												 7594
+
+SQL> conn sys as sysdba
+
+Connected.
+SQL>  recover managed  standby database disconnect from session;
+Media recovery complete.
+SQL> select name,open_mode from v$database;
+
+NAME	  OPEN_MODE
+--------- --------------------
+PROD	  READ ONLY WITH APPLY
+
+SQL> select * from t1;
+select * from t1
+              *
+ERROR at line 1:
+ORA-00942: table or view does not exist
+
+
+SQL> select * from scott.t1;
+
+	ID NAME 					      ADDREESS													 PHNO
+---------- -------------------------------------------------- ---------------------------------------------------------------------------------------------------- ----------
+	 1 Demo1					      Delhi													 7598
+	 2 Demo12					      Kolkata													 7591
+	 3 Demo13					      Mumbai													 7593
+	 4 Demo4					      salt_lake 												 7594
+	 5 Demo5					      Kolkata													 1256
+
+SQL> /
+
+	ID NAME 					      ADDREESS													 PHNO
+---------- -------------------------------------------------- ---------------------------------------------------------------------------------------------------- ----------
+	 1 Demo1					      Delhi													 7598
+	 2 Demo12					      Kolkata													 7591
+	 3 Demo13					      Mumbai													 7593
+	 4 Demo4					      salt_lake 												 7594
+	 5 Demo15					      Kolkata													 1256
+
+SQL> recover managed  standby database connecl;
+ORA-00274: illegal recovery option CONNECL
+
+
+SQL> recover managed  standby database conecl;
+ORA-00274: illegal recovery option CONECL
+
+
+SQL> recover managed  standby database cancel;
+Media recovery complete.
+SQL> select * from scott.t1;
+
+	ID NAME 					      ADDREESS													 PHNO
+---------- -------------------------------------------------- ---------------------------------------------------------------------------------------------------- ----------
+	 1 Demo1					      Delhi													 7598
+	 2 Demo12					      Kolkata													 7591
+	 3 Demo13					      Mumbai													 7593
+	 4 Demo4					      salt_lake 												 7594
+	 5 Demo15					      Kolkata													 1256
+
+SQL> recover managed  standby database disconnect from session;
+Media recovery complete.
+SQL> select * from scott.t1;
+
+	ID NAME 					      ADDREESS													 PHNO
+---------- -------------------------------------------------- ---------------------------------------------------------------------------------------------------- ----------
+	 1 Demo1					      Delhi													 7598
+	 2 Demo12					      Kolkata													 7591
+	 3 Demo13					      Mumbai													 7593
+	 4 Demo4					      salt_lake 												 7594
+	 5 Demo15					      Kolkata													 1256
+	 6 Demo6					      Due													 5566
+
+6 rows selected.
+
+SQL> 
