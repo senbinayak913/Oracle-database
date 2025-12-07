@@ -1,0 +1,397 @@
+Terminal 1
+
+[oracle@localhost ~]$ . oraenv
+ORACLE_SID = [oracle] ? prod
+The Oracle base has been set to /u01/app/oracle
+[oracle@localhost ~]$ lsnrctl start listener
+
+LSNRCTL for Linux: Version 19.0.0.0.0 - Production on 07-DEC-2025 21:51:52
+
+Copyright (c) 1991, 2019, Oracle.  All rights reserved.
+
+Starting /u01/app/oracle/product/19.0.0/dbhome_1/bin/tnslsnr: please wait...
+
+TNSLSNR for Linux: Version 19.0.0.0.0 - Production
+System parameter file is /u01/app/oracle/product/19.0.0/dbhome_1/network/admin/listener.ora
+Log messages written to /u01/app/oracle/diag/tnslsnr/localhost/listener/alert/log.xml
+Listening on: (DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=192.168.56.10)(PORT=1521)))
+
+Connecting to (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=192.168.56.10)(PORT=1521)))
+STATUS of the LISTENER
+------------------------
+Alias                     listener
+Version                   TNSLSNR for Linux: Version 19.0.0.0.0 - Production
+Start Date                07-DEC-2025 21:51:53
+Uptime                    0 days 0 hr. 0 min. 0 sec
+Trace Level               off
+Security                  ON: Local OS Authentication
+SNMP                      OFF
+Listener Parameter File   /u01/app/oracle/product/19.0.0/dbhome_1/network/admin/listener.ora
+Listener Log File         /u01/app/oracle/diag/tnslsnr/localhost/listener/alert/log.xml
+Listening Endpoints Summary...
+  (DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=192.168.56.10)(PORT=1521)))
+Services Summary...
+Service "prod" has 1 instance(s).
+  Instance "prod", status UNKNOWN, has 1 handler(s) for this service...
+The command completed successfully
+[oracle@localhost ~]$ tnsping prods
+
+TNS Ping Utility for Linux: Version 19.0.0.0.0 - Production on 07-DEC-2025 21:53:14
+
+Copyright (c) 1997, 2019, Oracle.  All rights reserved.
+
+Used parameter files:
+
+
+Used TNSNAMES adapter to resolve the alias
+Attempting to contact (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.56.11)(PORT = 1521))) (CONNECT_DATA = (SERVICE_NAME = prods)))
+OK (30 msec)
+[oracle@localhost ~]$ 
+_____________________________________________________________________________________________________________________________________________________________________________
+
+[oracle@localhost ~]$ . oraenv
+ORACLE_SID = [oracle] ? prod 
+The Oracle base has been set to /u01/app/oracle
+[oracle@localhost ~]$ sqlplus sys as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Sun Dec 7 21:55:29 2025
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+Enter password: 
+Connected to an idle instance.
+
+SQL> startup
+ORACLE instance started.
+
+Total System Global Area 1493168352 bytes
+Fixed Size		    8896736 bytes
+Variable Size		 1224736768 bytes
+Database Buffers	  251658240 bytes
+Redo Buffers		    7876608 bytes
+Database mounted.
+Database opened.
+SQL>  select max(sequence#) from v$archived_log;
+
+MAX(SEQUENCE#)
+--------------
+	    15
+
+SQL> alter system set log_archive_dest_2='service'=prods affirm sync valid_for = (online_logfiles,primary_role)db_qnique_name=prods^[[A^[[     
+  2  ;
+alter system set log_archive_dest_2='service'=prods affirm sync valid                                             *_name=prods
+ERROR at line 1:
+ORA-00922: missing or invalid option
+
+
+SQL> alter system set log_archive_dest_2='service =prods affirm sync valid_for = (online_logfiles,primary_role)db_qnique_name=prods;
+alter system set log_archive_dest_2='service =prods affirm sync valid_for = (online_logfiles,primary_role)db_qnique_name=prods
+                                    *
+ERROR at line 1:
+ORA-01756: quoted string not properly terminated
+
+
+SQL> alter system set log_archive_dest_2='service =prods affirm sync valid_for = (online_logfiles,primary_role)db_qnique_name=prods';
+alter system set log_archive_dest_2='service =prods affirm sync valid_for = (online_logfiles,primary_role)db_qnique_name=prods'
+*
+ERROR at line 1:
+ORA-02097: parameter cannot be modified because specified value is invalid
+ORA-16024: parameter LOG_ARCHIVE_DEST_2 cannot be parsed
+
+
+SQL> alter system set log_archive_dest_2='service =prods affirm sync valid_for = (online_logfiles,primary_role)db_unique_name=prods';
+alter system set log_archive_dest_2='service =prods affirm sync valid_for = (online_logfiles,primary_role)db_unique_name=prods'
+*
+ERROR at line 1:
+ORA-02097: parameter cannot be modified because specified value is invalid
+ORA-16024: parameter LOG_ARCHIVE_DEST_2 cannot be parsed
+
+
+SQL> ALTER SYSTEM SET LOG_ARCHIVE_DEST_2='SERVICE=prods AFFIRM SYNC VALID_FOR=
+(ONLINE_LOGFILES,PRIMARY_ROLE) DB_UNIQUE_NAME=prods';     
+  3  
+SQL> ALTER SYSTEM SET LOG_ARCHIVE_DEST_2='SERVICE=prods AFFIRM SYNC VALID_FOR=
+(ONLINE_LOGFILES,PRIMARY_ROLE) DB_UNIQUE_NAME=prods';  2  
+ALTER SYSTEM SET LOG_ARCHIVE_DEST_2='SERVICE=prods AFFIRM SYNC VALID_FOR=
+*
+ERROR at line 1:
+ORA-02097: parameter cannot be modified because specified value is invalid
+ORA-16024: parameter LOG_ARCHIVE_DEST_2 cannot be parsed
+
+
+SQL>  ALTER SYSTEM SET LOG_ARCHIVE_DEST_2='SERVICE=prods AFFIRM SYNC VALID_FOR=(ONLINE_LOGFILES,PRIMARY_ROLE) DB_UNIQUE_NAME=prods';
+
+System altered.
+
+SQL> alter system checkpoint; 
+
+System altered.
+
+SQL> shutdown immediate;
+Database closed.
+Database dismounted.
+ORACLE instance shut down.
+SQL> startup mount
+ORACLE instance started.
+
+Total System Global Area 1493168352 bytes
+Fixed Size		    8896736 bytes
+Variable Size		 1241513984 bytes
+Database Buffers	  234881024 bytes
+Redo Buffers		    7876608 bytes
+Database mounted.
+SQL> ALTER DATABASE SET STANDBY DATABASE TO MAXIMIZE AVAILABILITY;
+
+Database altered.
+
+SQL> alter database open;
+
+Database altered.
+
+SQL> SELECT protection_mode FROM v$database;
+
+PROTECTION_MODE
+--------------------
+MAXIMUM AVAILABILITY
+
+SQL> select max(sequence#) from v$archived_log;
+
+MAX(SEQUENCE#)
+--------------
+	    21
+
+SQL> conn scott/tiger
+ERROR:
+ORA-01017: invalid username/password; logon denied
+
+
+Warning: You are no longer connected to ORACLE.
+SQL> @?/rdbms/admin/utlsampl.sql
+[oracle@localhost ~]$ rlwrap sqlplus sys as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Sun Dec 7 22:29:19 2025
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+Enter password: 
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> alter user scott identified tiger;
+alter user scott identified tiger
+                            *
+ERROR at line 1:
+ORA-00924: missing BY keyword
+
+
+SQL> alter user scott identified by tiger account unlock;
+alter user scott identified by tiger account unlock
+           *
+ERROR at line 1:
+ORA-01918: user 'SCOTT' does not exist
+
+
+SQL> show user
+USER is "SYS"
+SQL> alter user scott identified by tiger account unlock;
+alter user scott identified by tiger account unlock
+           *
+ERROR at line 1:
+ORA-01918: user 'SCOTT' does not exist
+
+
+SQL> @?/rdbms/admin/utlsampl.sql
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+[oracle@localhost ~]$ rlwrap sqlplus sys as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Sun Dec 7 22:31:18 2025
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+Enter password: 
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> alter user scott identified by tiger account unlock;
+
+User altered.
+
+SQL> conn scott/tiger
+Connected.
+SQL> select * from tab;
+
+TNAME
+--------------------------------------------------------------------------------
+TABTYPE        CLUSTERID
+------------- ----------
+DEPT
+TABLE
+
+EMP
+TABLE
+
+BONUS
+TABLE
+
+
+TNAME
+--------------------------------------------------------------------------------
+TABTYPE        CLUSTERID
+------------- ----------
+SALGRADE
+TABLE
+
+
+SQL> set lin 200 pages 200
+SQL> /
+
+TNAME									 TABTYPE	CLUSTERID
+-------------------------------------------------------------------------------------------------------------------------------- ------------- ----------
+DEPT									 TABLE
+EMP									 TABLE
+BONUS									 TABLE
+SALGRADE								 TABLE
+
+SQL> create table t1(
+  2  id number primary key,
+  3  name varchar2(50),
+  4  addreess varchar(100));
+
+Table created.
+
+SQL> insert into t1 values(1,'Demo1','Delhi');
+
+1 row created.
+
+SQL> insert into t1 values(2,'Demo2','Kolkata');
+
+1 row created.
+
+SQL> insert into t1 values(&id,'&name','&address');
+Enter value for id: 3
+Enter value for name: Demo3
+Enter value for address: Mumbai
+old   1: insert into t1 values(&id,'&name','&address')
+new   1: insert into t1 values(3,'Demo3','Mumbai')
+
+1 row created.
+
+SQL> /
+Enter value for id: 4
+Enter value for name: Demo4
+Enter value for address: salt_lake
+old   1: insert into t1 values(&id,'&name','&address')
+new   1: insert into t1 values(4,'Demo4','salt_lake')
+
+1 row created.
+
+SQL> commit;
+
+Commit complete.
+
+SQL> /
+
+Commit complete.
+
+SQL> update t1 set name='Demo12' where id=2;
+
+1 row updated.
+
+SQL> update t1 set name='Demo13' where id=3;
+
+1 row updated.
+
+SQL> update t1 set name='Demo12' where id=2;
+
+1 row updated.
+
+SQL> conn sys as sysdba
+
+Connected.
+SQL> conn scott/tiger
+Connected.
+SQL> select * from t1;
+
+	ID NAME 					      ADDREESS
+---------- -------------------------------------------------- ----------------------------------------------------------------------------------------------------
+	 1 Demo1					      Delhi
+	 2 Demo12					      Kolkata
+	 3 Demo13					      Mumbai
+	 4 Demo4					      salt_lake
+
+SQL> commit
+  2  ;
+
+Commit complete.
+
+SQL> conn sys as sysdba
+
+Connected.
+SQL> select max(sequence#) from v$archived_log;
+
+MAX(SEQUENCE#)
+--------------
+	    21
+
+SQL> scott/tiger
+SP2-0734: unknown command beginning "scott/tige..." - rest of line ignored.
+SQL> show user
+USER is "SYS"
+SQL> alter table t1 add phno int;
+alter table t1 add phno int
+*
+ERROR at line 1:
+ORA-00942: table or view does not exist
+
+
+SQL> con scott/tiger
+SP2-0734: unknown command beginning "con scott/..." - rest of line ignored.
+SQL> conn scott/tiger
+Connected.
+SQL> alter table t1 add phno int;
+
+Table altered.
+
+SQL> update t1 set phno=7598 where id=1;
+
+1 row updated.
+
+SQL> update t1 set phno=7591 where id=2;
+
+1 row updated.
+
+SQL> update t1 set phno=7593 where id=3;
+
+1 row updated.
+
+SQL> update t1 set phno=7594 where id=4;
+
+1 row updated.
+
+SQL> select * from t1;
+
+	ID NAME 					      ADDREESS									 PHNO
+---------- -------------------------------------------------- ---------------------------------------------------------------------------------------------------- ----------
+	 1 Demo1					      Delhi	 7598
+	 2 Demo12					      Kolkata 7591
+	 3 Demo13					      Mumbai 7593
+	 4 Demo4					      salt_lake 									 7594
+
+SQL> select * from t1 where phno =7591;
+
+	ID NAME 					      ADDREESS													 PHNO
+---------- -------------------------------------------------- ---------------------------------------------------------------------------------------------------- ----------
+	 2 Demo12					      Kolkata													 7591
+
+SQL> commit;
+
+Commit complete.
+
