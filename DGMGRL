@@ -1,0 +1,283 @@
+[oracle@localhost ~]$ . oraenv
+ORACLE_SID = [oracle] ? prod 
+The Oracle base has been set to /u01/app/oracle
+[oracle@localhost ~]$ lsnrctl start listener
+
+LSNRCTL for Linux: Version 19.0.0.0.0 - Production on 14-DEC-2025 21:03:03
+
+Copyright (c) 1991, 2019, Oracle.  All rights reserved.
+
+Starting /u01/app/oracle/product/19.0.0/dbhome_1/bin/tnslsnr: please wait...
+
+TNSLSNR for Linux: Version 19.0.0.0.0 - Production
+System parameter file is /u01/app/oracle/product/19.0.0/dbhome_1/network/admin/listener.ora
+Log messages written to /u01/app/oracle/diag/tnslsnr/localhost/listener/alert/log.xml
+Listening on: (DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=192.168.56.10)(PORT=1521)))
+
+Connecting to (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=192.168.56.10)(PORT=1521)))
+STATUS of the LISTENER
+------------------------
+Alias                     listener
+Version                   TNSLSNR for Linux: Version 19.0.0.0.0 - Production
+Start Date                14-DEC-2025 21:03:03
+Uptime                    0 days 0 hr. 0 min. 0 sec
+Trace Level               off
+Security                  ON: Local OS Authentication
+SNMP                      OFF
+Listener Parameter File   /u01/app/oracle/product/19.0.0/dbhome_1/network/admin/listener.ora
+Listener Log File         /u01/app/oracle/diag/tnslsnr/localhost/listener/alert/log.xml
+Listening Endpoints Summary...
+  (DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=192.168.56.10)(PORT=1521)))
+Services Summary...
+Service "prod" has 1 instance(s).
+  Instance "prod", status UNKNOWN, has 1 handler(s) for this service...
+The command completed successfully
+[oracle@localhost ~]$ tnsping prods
+
+TNS Ping Utility for Linux: Version 19.0.0.0.0 - Production on 14-DEC-2025 21:04:36
+
+Copyright (c) 1997, 2019, Oracle.  All rights reserved.
+
+Used parameter files:
+
+
+Used TNSNAMES adapter to resolve the alias
+Attempting to contact (DESCRIPTION = (ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.56.11)(PORT = 1521))) (CONNECT_DATA = (SERVICE_NAME = prods)))
+OK (20 msec)
+[oracle@localhost ~]$ rlwrap sqlplus sys as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Sun Dec 14 21:05:16 2025
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+Enter password: 
+Connected to an idle instance.
+
+SQL> startup
+ORACLE instance started.
+
+Total System Global Area 1493168352 bytes
+Fixed Size		    8896736 bytes
+Variable Size		 1258291200 bytes
+Database Buffers	  218103808 bytes
+Redo Buffers		    7876608 bytes
+Database mounted.
+Database opened.
+SQL>   select name,open_mode,database_role from v$database;
+
+NAME	  OPEN_MODE	       DATABASE_ROLE
+--------- -------------------- ----------------
+PROD	  READ WRITE	       PRIMARY
+
+SQL> SELECT log_mode FROM v$database;
+
+LOG_MODE
+------------
+ARCHIVELOG
+
+SQL> select open_mode,database_role from v$database;
+
+OPEN_MODE	     DATABASE_ROLE
+-------------------- ----------------
+READ WRITE	     PRIMARY
+
+SQL> select name,open_mode,protection_mode,database_role from v$database;
+
+NAME	  OPEN_MODE	       PROTECTION_MODE	    DATABASE_ROLE
+--------- -------------------- -------------------- ----------------
+PROD	  READ WRITE	       MAXIMUM PROTECTION   PRIMARY
+
+SQL>  recover managed standby database disconnect from session
+ORA-01665: control file is not a standby control file
+
+
+SQL> show parameter DG_BROKER_START
+
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+dg_broker_start 		     boolean	 FALSE
+SQL> show parameter DG_BROKER_STAR
+
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+dg_broker_start 		     boolean	 FALSE
+SQL> alter system set dg_broker_start=true;
+
+System altered.
+
+SQL> show parameter dg_broker_config
+
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+dg_broker_config_file1		     string	 /u01/app/oracle/product/19.0.0
+						 /dbhome_1/dbs/dr1prod.dat
+dg_broker_config_file2		     string	 /u01/app/oracle/product/19.0.0
+						 /dbhome_1/dbs/dr2prod.dat
+SQL> !
+[oracle@localhost ~]$ netmage
+bash: netmage: command not found...
+
+
+rlwrap: warning: rlwrap appears to do nothing for sqlplus, which asks for
+single keypresses all the time. Don't you need --always-readline
+and possibly --no-children? (cf. the rlwrap manpage)
+
+warnings can be silenced by the --no-warnings (-n) option
+[oracle@localhost ~]$ netmgr
+[oracle@localhost ~]$ cd /u01/app/oracle/product/19.0.0/dbhome_1/networks
+bash: cd: /u01/app/oracle/product/19.0.0/dbhome_1/networks: No such file or directory
+[oracle@localhost ~]$ cd /u01/app/oracle/product/19.0.0/dbhome_1/
+[oracle@localhost dbhome_1]$ ll
+total 128
+drwxr-xr-x.  2 oracle oinstall   102 Nov 30 15:43 addnode
+drwxr-xr-x.  6 oracle oinstall  4096 Apr 17  2019 apex
+drwxr-xr-x.  9 oracle oinstall    93 Apr 17  2019 assistants
+drwxr-xr-x.  2 oracle oinstall  8192 Nov 30 15:45 bin
+drwxr-xr-x.  4 oracle oinstall    30 Nov 30 15:43 cfgtoollogs
+drwxr-xr-x.  4 oracle oinstall    87 Nov 30 15:43 clone
+drwxr-xr-x.  6 oracle oinstall    55 Apr 17  2019 crs
+drwxr-xr-x.  3 oracle oinstall    18 Apr 17  2019 css
+drwxr-xr-x. 11 oracle oinstall  4096 Apr 17  2019 ctx
+drwxr-xr-x.  7 oracle oinstall    71 Apr 17  2019 cv
+drwxr-xr-x.  3 oracle oinstall    20 Apr 17  2019 data
+drwxr-xr-x.  3 oracle oinstall    19 Apr 17  2019 dbjava
+drwxr-xr-x.  2 oracle oinstall  4096 Dec 14 22:50 dbs
+drwxr-xr-x.  5 oracle oinstall  4096 Nov 30 15:43 deinstall
+drwxr-xr-x.  3 oracle oinstall    20 Apr 17  2019 demo
+drwxr-xr-x.  3 oracle oinstall    20 Apr 17  2019 diagnostics
+drwxr-xr-x. 13 oracle oinstall  4096 Apr 17  2019 dmu
+drwxr-xr-x.  4 oracle oinstall    30 Apr 17  2019 drdaas
+drwxr-xr-x.  3 oracle oinstall    19 Apr 17  2019 dv
+-rwxr-xr-x.  1 oracle oinstall   852 Aug 18  2015 env.ora
+drwxr-xr-x.  3 oracle oinstall    18 Apr 17  2019 has
+drwxr-xr-x.  5 oracle oinstall    41 Apr 17  2019 hs
+drwxrwx---. 10 oracle oinstall  4096 Nov 30 15:44 install
+drwxr-xr-x.  2 oracle oinstall    29 Apr 17  2019 instantclient
+drwxr-x---. 14 oracle oinstall  4096 Nov 30 15:43 inventory
+drwxr-xr-x.  8 oracle oinstall    82 Apr 18  2019 javavm
+drwxr-xr-x.  3 oracle oinstall    35 Apr 17  2019 jdbc
+drwxr-xr-x.  6 oracle oinstall  4096 Apr 18  2019 jdk
+drwxr-xr-x.  2 oracle oinstall  4096 Apr 17  2019 jlib
+drwxr-xr-x. 10 oracle oinstall  4096 Apr 17  2019 ldap
+drwxr-xr-x.  4 oracle oinstall 12288 Nov 30 15:43 lib
+drwxr-xr-t.  4 oracle oinstall    35 Dec  4 21:53 log
+drwxr-xr-x.  9 oracle oinstall    98 Apr 17  2019 md
+drwxr-xr-x.  4 oracle oinstall    31 Apr 17  2019 mgw
+drwxr-xr-x. 10 oracle oinstall  4096 Apr 17  2019 network
+drwxr-xr-x.  5 oracle oinstall    46 Apr 17  2019 nls
+drwxr-xr-x.  8 oracle oinstall   101 Apr 17  2019 odbc
+drwxr-xr-x.  5 oracle oinstall    42 Apr 17  2019 olap
+drwxr-xr-x. 14 oracle oinstall  4096 Nov 30 15:43 OPatch
+drwxr-xr-x.  7 oracle oinstall    65 Apr 17  2019 opmn
+drwxr-xr-x.  4 oracle oinstall    34 Apr 17  2019 oracore
+-rw-r-----.  1 oracle oinstall    56 Nov 30 15:41 oraInst.loc
+drwxr-xr-x.  6 oracle oinstall    52 Apr 17  2019 ord
+drwxr-xr-x.  4 oracle oinstall    66 Apr 17  2019 ords
+drwxr-xr-x.  3 oracle oinstall    19 Apr 17  2019 oss
+drwxr-xr-x.  8 oracle oinstall  4096 Nov 30 15:43 oui
+drwxr-xr-x.  4 oracle oinstall    33 Apr 17  2019 owm
+drwxr-xr-x.  5 oracle oinstall    39 Apr 17  2019 perl
+drwxr-xr-x.  6 oracle oinstall    78 Apr 17  2019 plsql
+drwxr-xr-x.  6 oracle oinstall    56 Apr 18  2019 precomp
+drwxr-xr-x.  2 oracle oinstall    26 Apr 17  2019 QOpatch
+drwxr-xr-x.  5 oracle oinstall    52 Apr 17  2019 R
+drwxr-xr-x.  4 oracle oinstall    29 Apr 17  2019 racg
+drwxr-xr-x. 13 oracle oinstall  4096 Apr 18  2019 rdbms
+drwxr-xr-x.  3 oracle oinstall    21 Apr 17  2019 relnotes
+-rwx------.  1 oracle oinstall   638 Nov 30 15:43 root.sh
+-rwxr-xr-x.  1 oracle oinstall   786 Apr 17  2019 root.sh.old
+-rwxr-xr-x.  1 oracle oinstall    10 Apr 17  2019 root.sh.old.1
+-rwxr-xr-x.  1 oracle oinstall   638 Apr 18  2019 root.sh.old.2
+-rwxr-xr-x.  1 oracle oinstall    10 Apr 17  2019 root.sh.old.3
+-rwxr-x---.  1 oracle oinstall  1783 Mar  8  2017 runInstaller
+-rwxr-xr-x.  1 oracle oinstall  2927 Oct 14  2016 schagent.conf
+drwxr-xr-x.  5 oracle oinstall  4096 Apr 17  2019 sdk
+drwxr-xr-x.  3 oracle oinstall    18 Apr 17  2019 slax
+drwxr-xr-x.  4 oracle oinstall    41 Apr 17  2019 sqldeveloper
+drwxr-xr-x.  3 oracle oinstall    17 Apr 17  2019 sqlj
+drwxr-xr-x.  4 oracle oinstall  4096 Apr 18  2019 sqlpatch
+drwxr-xr-x.  6 oracle oinstall    53 Nov 30 15:42 sqlplus
+drwxr-xr-x.  6 oracle oinstall    54 Apr 17  2019 srvm
+drwxr-xr-x.  5 oracle oinstall    45 Apr 17  2019 suptools
+drwxr-xr-x.  3 oracle oinstall    35 Apr 17  2019 ucp
+drwxr-xr-x.  4 oracle oinstall    31 Apr 17  2019 usm
+drwxr-xr-x.  2 oracle oinstall    33 Apr 17  2019 utl
+drwxr-xr-x.  3 oracle oinstall    19 Apr 17  2019 wwg
+drwxr-x---.  7 oracle oinstall    69 Apr 17  2019 xdk
+[oracle@localhost dbhome_1]$ cd network
+[oracle@localhost network]$ ll
+total 24
+drwxr-xr-x. 3 oracle oinstall   79 Dec  4 21:32 admin
+drwxr-xr-x. 4 oracle oinstall 4096 Apr 17  2019 install
+drwxr-xr-x. 2 oracle oinstall 4096 Apr 17  2019 jlib
+drwxr-xr-x. 2 oracle oinstall 4096 Nov 30 15:42 lib
+drwxrwx---. 2 oracle oinstall    6 Apr 17  2019 log
+drwxr-xr-x. 2 oracle oinstall 8192 Apr 17  2019 mesg
+drwxr-xr-x. 4 oracle oinstall   53 Nov 30 15:43 tools
+drwxrwx---. 2 oracle oinstall    6 Apr 17  2019 trace
+[oracle@localhost network]$ cd admin
+[oracle@localhost admin]$ ll
+total 12
+-rw-r--r--. 1 oracle oinstall  468 Dec  4 21:12 listener.ora
+drwxr-xr-x. 2 oracle oinstall   64 Apr 17  2019 samples
+-rwxr-xr-x. 1 oracle oinstall 1536 Feb 14  2018 shrept.lst
+-rw-r--r--. 1 oracle oinstall  514 Dec  4 21:32 tnsnames.ora
+[oracle@localhost admin]$ vi  listener.ora
+
+/u01/app/oracle/product/19.0.0/dbhome_1/network/admin
+[oracle@localhost admin]$ . oraenv
+ORACLE_SID = [prod] ? prod
+The Oracle base remains unchanged with value /u01/app/oracle
+[oracle@localhost admin]$ dgmgrl
+DGMGRL for Linux: Release 19.0.0.0.0 - Production on Sun Dec 14 23:07:07 2025
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle and/or its affiliates.  All rights reserved.
+
+Welcome to DGMGRL, type "help" for information.
+DGMGRL> connect sys/oracle@prod
+Connected to "prod"
+Connected as SYSDBA.
+DGMGRL> show configuration;
+ORA-16532: Oracle Data Guard broker configuration does not exist
+
+Configuration details cannot be determined by DGMGRL
+DGMGRL>  create configuration prod as primary database is prod connect identifier is prod;
+Configuration "prod" created with primary database "prod"
+DGMGRL>  show configuration;
+
+Configuration - prod
+
+  Protection Mode: MaxProtection
+  Members:
+  prod - Primary database
+
+Fast-Start Failover:  Disabled
+
+Configuration Status:
+DISABLED
+
+DGMGRL> add database orcls as connect identifier is orcls maintained as physical;
+Error: ORA-12154: TNS:could not resolve the connect identifier specified
+
+Failed.
+DGMGRL> add database orcls as connect identifier is orcls maintained as physical;
+Error: ORA-12154: TNS:could not resolve the connect identifier specified
+
+Failed.
+DGMGRL> add database prods connect identifier is orcls maintained as physical;
+add database prods connect identifier is orcls maintained as physical;
+                   ^
+Syntax error before or at "connect"
+DGMGRL> add database prods as connect identifier is orcls maintained as physical;
+Error: ORA-16796: one or more properties could not be imported from the member
+
+Failed.
+DGMGRL> remove database orcls;
+Object "orcls" was not found
+DGMGRL> add database prods as connect identifier is orcls maintained as physical;
+Error: ORA-16796: one or more properties could not be imported from the member
+
+Failed.
+DGMGRL> 
