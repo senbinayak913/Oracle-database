@@ -1,0 +1,107 @@
+[oracle@localhost ~]$ . oraenv
+ORACLE_SID = [oracle] ? prod
+The Oracle base has been set to /u01/app/oracle
+[oracle@localhost ~]$ lsnrctl status listener
+
+LSNRCTL for Linux: Version 19.0.0.0.0 - Production on 15-DEC-2025 08:04:57
+
+Copyright (c) 1991, 2019, Oracle.  All rights reserved.
+
+Connecting to (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=192.168.56.10)(PORT=1521)))
+STATUS of the LISTENER
+------------------------
+Alias                     listener
+Version                   TNSLSNR for Linux: Version 19.0.0.0.0 - Production
+Start Date                15-DEC-2025 07:49:29
+Uptime                    0 days 0 hr. 15 min. 28 sec
+Trace Level               off
+Security                  ON: Local OS Authentication
+SNMP                      OFF
+Listener Parameter File   /u01/app/oracle/product/19.0.0/dbhome_1/network/admin/listener.ora
+Listener Log File         /u01/app/oracle/diag/tnslsnr/localhost/listener/alert/log.xml
+Listening Endpoints Summary...
+  (DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=192.168.56.10)(PORT=1521)))
+Services Summary...
+Service "prod_DGMGRL" has 1 instance(s).
+  Instance "prod", status UNKNOWN, has 1 handler(s) for this service...
+The command completed successfully
+[oracle@localhost ~]$ sqlplus sys as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Mon Dec 15 08:05:10 2025
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+Enter password: 
+Connected to an idle instance.
+
+SQL> startup
+ORACLE instance started.
+
+Total System Global Area 1493168352 bytes
+Fixed Size		    8896736 bytes
+Variable Size		 1258291200 bytes
+Database Buffers	  218103808 bytes
+Redo Buffers		    7876608 bytes
+Database mounted.
+ORA-03113: end-of-file on communication channel
+Process ID: 4894
+Session ID: 1 Serial number: 51236
+
+
+SQL> select name,open_mode, protection_mode from v$database;
+ERROR:
+ORA-03114: not connected to ORACLE
+
+
+SQL> startup mount
+SP2-0642: SQL*Plus internal error state 2133, context 3114:0:0
+Unsafe to proceed
+ORA-03114: not connected to ORACLE
+
+
+SQL> !
+[oracle@localhost ~]$ . oraenv
+ORACLE_SID = [prod] ? prod
+The Oracle base remains unchanged with value /u01/app/oracle
+[oracle@localhost ~]$ sqlplus sys as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Mon Dec 15 08:07:37 2025
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+Enter password: 
+Connected to an idle instance.
+
+SQL> startup mount
+ORACLE instance started.
+
+Total System Global Area 1493168352 bytes
+Fixed Size		    8896736 bytes
+Variable Size		 1258291200 bytes
+Database Buffers	  218103808 bytes
+Redo Buffers		    7876608 bytes
+Database mounted.
+SQL> select name,open_mode, protection_mode from v$database;
+
+NAME	  OPEN_MODE	       PROTECTION_MODE
+--------- -------------------- --------------------
+PROD	  MOUNTED	       MAXIMUM PROTECTION
+
+SQL> ALTER DATABASE SET STANDBY DATABASE TO MAXIMIZE performence;
+ALTER DATABASE SET STANDBY DATABASE TO MAXIMIZE performence
+                                                *
+ERROR at line 1:
+ORA-02231: missing or invalid option to ALTER DATABASE
+
+
+SQL> ALTER DATABASE SET STANDBY DATABASE TO MAXIMIZE performance;
+
+Database altered.
+
+SQL> alter database open;
+
+Database altered.
+
+SQL> 
