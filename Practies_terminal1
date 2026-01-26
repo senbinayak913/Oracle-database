@@ -1,0 +1,5539 @@
+[oracle@localhost ~]$ . oraenv
+ORACLE_SID = [oracle] ? prod
+The Oracle base has been set to /u01/app/oracle
+[oracle@localhost ~]$ sqlplus sys as sysdba
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Mon Jan 26 15:55:02 2026
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+Enter password: 
+Connected to an idle instance.
+
+SQL> startup
+ORACLE instance started.
+
+Total System Global Area 1493168352 bytes
+Fixed Size		    8896736 bytes
+Variable Size		 1090519040 bytes
+Database Buffers	  385875968 bytes
+Redo Buffers		    7876608 bytes
+Database mounted.
+Database opened.
+SQL> desc dba_data_files;
+ Name					   Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ FILE_NAME					    VARCHAR2(513)
+ FILE_ID					    NUMBER
+ TABLESPACE_NAME				    VARCHAR2(30)
+ BYTES						    NUMBER
+ BLOCKS 					    NUMBER
+ STATUS 					    VARCHAR2(9)
+ RELATIVE_FNO					    NUMBER
+ AUTOEXTENSIBLE 				    VARCHAR2(3)
+ MAXBYTES					    NUMBER
+ MAXBLOCKS					    NUMBER
+ INCREMENT_BY					    NUMBER
+ USER_BYTES					    NUMBER
+ USER_BLOCKS					    NUMBER
+ ONLINE_STATUS					    VARCHAR2(7)
+ LOST_WRITE_PROTECT				    VARCHAR2(7)
+
+SQL> col FILE_NAME for a60
+SQL> select TABLESPACE_NAME,FILE_NAME,BYTES/1024/1024 as sizeMB from dba_data_files;
+
+TABLESPACE_NAME
+------------------------------
+FILE_NAME							 SIZEMB
+------------------------------------------------------------ ----------
+SYSTEM
+/u01/app/oracle/oradata/PROD/system01.dbf			    920
+
+SYSAUX
+/u01/app/oracle/oradata/PROD/sysaux01.dbf			    650
+
+UNDOTBS1
+/u01/app/oracle/oradata/PROD/undotbs01.dbf			    345
+
+
+TABLESPACE_NAME
+------------------------------
+FILE_NAME							 SIZEMB
+------------------------------------------------------------ ----------
+USERS
+/u01/app/oracle/oradata/PROD/users01.dbf			      5
+
+SHA_TB01
+/u01/app/oracle/oradata/PROD/shadb01.dbf			   4096
+
+
+SQL> set lin 200 pages 200
+SQL> /
+
+TABLESPACE_NAME 	       FILE_NAME					SIZEMB
+------------------------------ ------------------------------------------------------------ ----------
+SYSTEM			       /u01/app/oracle/oradata/PROD/system01.dbf	   920
+SYSAUX			       /u01/app/oracle/oradata/PROD/sysaux01.dbf	   650
+UNDOTBS1		       /u01/app/oracle/oradata/PROD/undotbs01.dbf	   345
+USERS			       /u01/app/oracle/oradata/PROD/users01.dbf 	     5
+SHA_TB01		       /u01/app/oracle/oradata/PROD/shadb01.dbf 	  4096
+
+SQL> drop tablespace SHA_TB01;
+
+Tablespace dropped.
+
+SQL> /
+drop tablespace SHA_TB01
+*
+ERROR at line 1:
+ORA-00959: tablespace 'SHA_TB01' does not exist
+
+
+SQL> select TABLESPACE_NAME,FILE_NAME,BYTES/1024/1024 as sizeMB from dba_data_files;
+
+TABLESPACE_NAME 	       FILE_NAME							SIZEMB
+------------------------------ ------------------------------------------------------------ ----------
+SYSTEM			       /u01/app/oracle/oradata/PROD/system01.dbf			   920
+SYSAUX			       /u01/app/oracle/oradata/PROD/sysaux01.dbf			   650
+USERS			       /u01/app/oracle/oradata/PROD/users01.dbf 			     5
+UNDOTBS1		       /u01/app/oracle/oradata/PROD/undotbs01.dbf			   345
+
+SQL> create tablespace Ratna datafile '/u01/app/oracle/oradata/PROD/binayak01.dbf' size 100M autoextend on;
+
+Tablespace created.
+
+SQL> create user Demo26 identified by demo quota 10m on USERS;	
+
+User created.
+
+SQL> grant create session, create table to Demo26;
+
+Grant succeeded.
+
+SQL> grant insert, update, delete to Demo26.employees;
+grant insert, update, delete to Demo26.employees
+                                      *
+ERROR at line 1:
+ORA-00933: SQL command not properly ended
+
+
+SQL> grant insert, update, delete on Demo26.employees;
+grant insert, update, delete on Demo26.employees
+                                               *
+ERROR at line 1:
+ORA-00905: missing keyword
+
+
+SQL> GRANT INSERT, UPDATE, DELETE ON Demo26.employees to Demo26;
+
+Grant succeeded.
+
+SQL> v$parameter
+SP2-0734: unknown command beginning "v$paramete..." - rest of line ignored.
+SQL> desc v$parameter 
+ Name														   Null?    Type
+ ----------------------------------------------------------------------------------------------------------------- -------- ----------------------------------------------------------------------------
+ NUM															    NUMBER
+ NAME															    VARCHAR2(80)
+ TYPE															    NUMBER
+ VALUE															    VARCHAR2(4000)
+ DISPLAY_VALUE														    VARCHAR2(4000)
+ DEFAULT_VALUE														    VARCHAR2(255)
+ ISDEFAULT														    VARCHAR2(9)
+ ISSES_MODIFIABLE													    VARCHAR2(5)
+ ISSYS_MODIFIABLE													    VARCHAR2(9)
+ ISPDB_MODIFIABLE													    VARCHAR2(5)
+ ISINSTANCE_MODIFIABLE													    VARCHAR2(5)
+ ISMODIFIED														    VARCHAR2(10)
+ ISADJUSTED														    VARCHAR2(5)
+ ISDEPRECATED														    VARCHAR2(5)
+ ISBASIC														    VARCHAR2(5)
+ DESCRIPTION														    VARCHAR2(255)
+ UPDATE_COMMENT 													    VARCHAR2(255)
+ HASH															    NUMBER
+ CON_ID 														    NUMBER
+
+SQL> col NAME for a60
+SQL> col ISSES_MODIFIABLE for a60
+SQL> col ISSYS_MODIFIABLE for a60
+SQL> select NAME,TYPE,VALUE,ISSES_MODIFIABLE,ISSYS_MODIFIABLE from v$parameter;
+
+NAME								   TYPE
+------------------------------------------------------------ ----------
+VALUE
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ISSES_MODIFIABLE					     ISSYS_MODIFIABLE
+------------------------------------------------------------ ------------------------------------------------------------
+lock_name_space 						      2
+
+FALSE							     FALSE
+
+processes							      3
+300
+FALSE							     FALSE
+
+sessions							      3
+472
+FALSE							     IMMEDIATE
+
+timed_statistics						      1
+TRUE
+TRUE							     IMMEDIATE
+
+timed_os_statistics						      3
+0
+TRUE							     IMMEDIATE
+
+resource_limit							      1
+TRUE
+FALSE							     IMMEDIATE
+
+license_max_sessions						      3
+0
+FALSE							     IMMEDIATE
+
+license_sessions_warning					      3
+0
+FALSE							     IMMEDIATE
+
+long_module_action						      1
+TRUE
+FALSE							     IMMEDIATE
+
+standby_db_preserve_states					      2
+NONE
+FALSE							     FALSE
+
+instance_abort_delay_time					      3
+0
+FALSE							     IMMEDIATE
+
+cpu_count							      3
+1
+FALSE							     IMMEDIATE
+
+cpu_min_count							      2
+1
+FALSE							     IMMEDIATE
+
+instance_groups 						      2
+
+FALSE							     FALSE
+
+event								      2
+
+FALSE							     FALSE
+
+sga_max_size							      6
+1493172224
+FALSE							     FALSE
+
+use_large_pages 						      2
+FALSE
+FALSE							     FALSE
+
+pre_page_sga							      1
+TRUE
+FALSE							     FALSE
+
+shared_memory_address						      3
+0
+FALSE							     FALSE
+
+hi_shared_memory_address					      3
+0
+FALSE							     FALSE
+
+lock_sga							      1
+FALSE
+FALSE							     FALSE
+
+processor_group_name						      2
+
+FALSE							     FALSE
+
+allow_group_access_to_sga					      1
+FALSE
+FALSE							     FALSE
+
+sga_min_size							      6
+0
+FALSE							     IMMEDIATE
+
+shared_pool_size						      6
+0
+FALSE							     IMMEDIATE
+
+large_pool_size 						      6
+0
+FALSE							     IMMEDIATE
+
+java_pool_size							      6
+0
+FALSE							     IMMEDIATE
+
+streams_pool_size						      6
+0
+FALSE							     IMMEDIATE
+
+shared_pool_reserved_size					      6
+19293798
+FALSE							     FALSE
+
+java_soft_sessionspace_limit					      3
+0
+FALSE							     FALSE
+
+java_max_sessionspace_size					      3
+0
+FALSE							     FALSE
+
+pga_aggregate_limit						      6
+2147483648
+FALSE							     IMMEDIATE
+
+spfile								      2
+/u01/app/oracle/product/19.0.0/dbhome_1/dbs/spfileprod.ora
+FALSE							     IMMEDIATE
+
+instance_type							      2
+RDBMS
+FALSE							     FALSE
+
+_ksb_restart_policy_times					      2
+0, 60, 120, 240
+FALSE							     IMMEDIATE
+
+uniform_log_timestamp_format					      1
+TRUE
+FALSE							     IMMEDIATE
+
+nls_language							      2
+AMERICAN
+TRUE							     FALSE
+
+nls_territory							      2
+AMERICA
+TRUE							     FALSE
+
+nls_sort							      2
+
+TRUE							     FALSE
+
+nls_date_language						      2
+
+TRUE							     FALSE
+
+nls_date_format 						      2
+
+TRUE							     FALSE
+
+nls_currency							      2
+
+TRUE							     FALSE
+
+nls_numeric_characters						      2
+
+TRUE							     FALSE
+
+nls_iso_currency						      2
+
+TRUE							     FALSE
+
+nls_calendar							      2
+
+TRUE							     FALSE
+
+nls_time_format 						      2
+
+TRUE							     FALSE
+
+nls_timestamp_format						      2
+
+TRUE							     FALSE
+
+nls_time_tz_format						      2
+
+TRUE							     FALSE
+
+nls_timestamp_tz_format 					      2
+
+NAME								   TYPE
+------------------------------------------------------------ ----------
+VALUE
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ISSES_MODIFIABLE					     ISSYS_MODIFIABLE
+------------------------------------------------------------ ------------------------------------------------------------
+
+TRUE							     FALSE
+
+nls_dual_currency						      2
+
+TRUE							     FALSE
+
+nls_comp							      2
+BINARY
+TRUE							     FALSE
+
+nls_length_semantics						      2
+BYTE
+TRUE							     IMMEDIATE
+
+nls_nchar_conv_excp						      2
+FALSE
+TRUE							     IMMEDIATE
+
+disk_asynch_io							      1
+TRUE
+FALSE							     FALSE
+
+tape_asynch_io							      1
+TRUE
+FALSE							     FALSE
+
+dbwr_io_slaves							      3
+0
+FALSE							     FALSE
+
+backup_tape_io_slaves						      1
+FALSE
+FALSE							     DEFERRED
+
+fileio_network_adapters 					      2
+
+FALSE							     FALSE
+
+filesystemio_options						      2
+none
+FALSE							     FALSE
+
+dnfs_batch_size 						      3
+4096
+FALSE							     FALSE
+
+clonedb 							      1
+FALSE
+FALSE							     FALSE
+
+instant_restore 						      1
+FALSE
+FALSE							     FALSE
+
+http_proxy							      2
+
+FALSE							     IMMEDIATE
+
+ssl_wallet							      2
+
+FALSE							     IMMEDIATE
+
+ofs_threads							      3
+4
+FALSE							     IMMEDIATE
+
+resource_manager_cpu_allocation 				      3
+1
+FALSE							     IMMEDIATE
+
+resource_manager_plan						      2
+SCHEDULER[0x4D56]:DEFAULT_MAINTENANCE_PLAN
+FALSE							     IMMEDIATE
+
+db_performance_profile						      2
+
+FALSE							     IMMEDIATE
+
+max_iops							      3
+0
+FALSE							     IMMEDIATE
+
+max_mbps							      3
+0
+FALSE							     IMMEDIATE
+
+max_idle_time							      3
+0
+FALSE							     IMMEDIATE
+
+max_idle_blocker_time						      3
+0
+FALSE							     IMMEDIATE
+
+cluster_interconnects						      2
+
+FALSE							     FALSE
+
+file_mapping							      1
+FALSE
+FALSE							     IMMEDIATE
+
+max_datapump_jobs_per_pdb					      2
+100
+FALSE							     IMMEDIATE
+
+max_datapump_parallel_per_job					      2
+50
+FALSE							     IMMEDIATE
+
+service_names							      2
+prod
+FALSE							     IMMEDIATE
+
+threaded_execution						      1
+FALSE
+FALSE							     FALSE
+
+clonedb_dir							      2
+
+FALSE							     FALSE
+
+enable_dnfs_dispatcher						      1
+FALSE
+FALSE							     FALSE
+
+_hang_resolution_scope						      2
+OFF
+FALSE							     IMMEDIATE
+
+gcs_server_processes						      3
+0
+FALSE							     FALSE
+
+active_instance_count						      3
+
+FALSE							     FALSE
+
+instance_mode							      2
+READ-WRITE
+FALSE							     FALSE
+
+sga_target							      6
+0
+FALSE							     IMMEDIATE
+
+memory_target							      6
+1493172224
+FALSE							     IMMEDIATE
+
+memory_max_target						      6
+1493172224
+FALSE							     FALSE
+
+control_files							      2
+/u01/app/oracle/oradata/PROD/control01.ctl, /u01/app/oracle/fast_recovery_area/PROD/control02.ctl
+FALSE							     FALSE
+
+db_file_name_convert						      2
+
+TRUE							     FALSE
+
+log_file_name_convert						      2
+
+FALSE							     FALSE
+
+control_file_record_keep_time					      3
+7
+FALSE							     IMMEDIATE
+
+db_block_buffers						      3
+0
+FALSE							     FALSE
+
+db_block_checksum						      2
+TYPICAL
+FALSE							     IMMEDIATE
+
+db_ultra_safe							      2
+OFF
+FALSE							     FALSE
+
+db_block_size							      3
+8192
+FALSE							     FALSE
+
+db_cache_size							      6
+0
+FALSE							     IMMEDIATE
+
+db_2k_cache_size						      6
+0
+
+NAME								   TYPE
+------------------------------------------------------------ ----------
+VALUE
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ISSES_MODIFIABLE					     ISSYS_MODIFIABLE
+------------------------------------------------------------ ------------------------------------------------------------
+FALSE							     IMMEDIATE
+
+db_4k_cache_size						      6
+0
+FALSE							     IMMEDIATE
+
+db_8k_cache_size						      6
+0
+FALSE							     IMMEDIATE
+
+db_16k_cache_size						      6
+0
+FALSE							     IMMEDIATE
+
+db_32k_cache_size						      6
+0
+FALSE							     IMMEDIATE
+
+db_keep_cache_size						      6
+0
+FALSE							     IMMEDIATE
+
+db_recycle_cache_size						      6
+0
+FALSE							     IMMEDIATE
+
+memoptimize_pool_size						      6
+0
+FALSE							     IMMEDIATE
+
+db_big_table_cache_percent_target				      2
+0
+FALSE							     IMMEDIATE
+
+encrypt_new_tablespaces 					      2
+CLOUD_ONLY
+FALSE							     IMMEDIATE
+
+db_writer_processes						      3
+1
+FALSE							     FALSE
+
+buffer_pool_keep						      2
+
+FALSE							     FALSE
+
+buffer_pool_recycle						      2
+
+FALSE							     FALSE
+
+db_flash_cache_file						      2
+
+FALSE							     IMMEDIATE
+
+db_flash_cache_size						      6
+0
+FALSE							     IMMEDIATE
+
+db_cache_advice 						      2
+ON
+FALSE							     IMMEDIATE
+
+compatible							      2
+19.0.0
+FALSE							     FALSE
+
+log_archive_dest_1						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_2						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_3						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_4						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_5						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_6						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_7						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_8						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_9						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_10						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_11						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_12						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_13						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_14						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_15						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_16						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_17						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_18						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_19						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_20						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_21						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_22						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_23						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_24						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_25						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_26						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_27						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_28						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_29						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_30						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_31						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_1					      2
+enable
+TRUE							     IMMEDIATE
+
+NAME								   TYPE
+------------------------------------------------------------ ----------
+VALUE
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ISSES_MODIFIABLE					     ISSYS_MODIFIABLE
+------------------------------------------------------------ ------------------------------------------------------------
+
+log_archive_dest_state_2					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_3					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_4					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_5					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_6					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_7					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_8					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_9					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_10					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_11					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_12					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_13					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_14					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_15					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_16					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_17					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_18					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_19					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_20					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_21					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_22					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_23					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_24					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_25					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_26					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_27					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_28					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_29					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_30					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_31					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_start						      1
+FALSE
+FALSE							     FALSE
+
+log_archive_dest						      2
+
+FALSE							     IMMEDIATE
+
+log_archive_duplex_dest 					      2
+
+FALSE							     IMMEDIATE
+
+log_archive_min_succeed_dest					      3
+1
+TRUE							     IMMEDIATE
+
+fal_client							      2
+
+FALSE							     IMMEDIATE
+
+fal_server							      2
+
+FALSE							     IMMEDIATE
+
+log_archive_trace						      3
+0
+FALSE							     IMMEDIATE
+
+data_guard_sync_latency 					      3
+0
+FALSE							     IMMEDIATE
+
+log_archive_config						      2
+
+FALSE							     IMMEDIATE
+
+log_archive_format						      2
+%t_%s_%r.dbf
+FALSE							     FALSE
+
+data_guard_max_io_time						      3
+240
+FALSE							     IMMEDIATE
+
+data_guard_max_longio_time					      3
+240
+FALSE							     IMMEDIATE
+
+redo_transport_user						      2
+
+FALSE							     IMMEDIATE
+
+log_archive_max_processes					      3
+4
+FALSE							     IMMEDIATE
+
+log_buffer							      6
+7536640
+FALSE							     FALSE
+
+log_checkpoint_interval 					      3
+0
+FALSE							     IMMEDIATE
+
+log_checkpoint_timeout						      3
+1800
+FALSE							     IMMEDIATE
+
+archive_lag_target						      3
+0
+FALSE							     IMMEDIATE
+
+
+NAME								   TYPE
+------------------------------------------------------------ ----------
+VALUE
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ISSES_MODIFIABLE					     ISSYS_MODIFIABLE
+------------------------------------------------------------ ------------------------------------------------------------
+db_files							      3
+200
+FALSE							     FALSE
+
+db_file_multiblock_read_count					      3
+82
+TRUE							     IMMEDIATE
+
+read_only_open_delayed						      1
+FALSE
+FALSE							     FALSE
+
+cluster_database						      1
+FALSE
+FALSE							     FALSE
+
+cluster_database_instances					      3
+1
+FALSE							     FALSE
+
+db_create_file_dest						      2
+
+TRUE							     IMMEDIATE
+
+db_create_online_log_dest_1					      2
+
+TRUE							     IMMEDIATE
+
+db_create_online_log_dest_2					      2
+
+TRUE							     IMMEDIATE
+
+db_create_online_log_dest_3					      2
+
+TRUE							     IMMEDIATE
+
+db_create_online_log_dest_4					      2
+
+TRUE							     IMMEDIATE
+
+db_create_online_log_dest_5					      2
+
+TRUE							     IMMEDIATE
+
+db_recovery_file_dest						      2
+/u01/app/oracle/fast_recovery_area
+FALSE							     IMMEDIATE
+
+db_recovery_file_dest_size					      6
+8657043456
+FALSE							     IMMEDIATE
+
+standby_file_management 					      2
+MANUAL
+FALSE							     IMMEDIATE
+
+db_unrecoverable_scn_tracking					      1
+TRUE
+TRUE							     IMMEDIATE
+
+thread								      3
+0
+FALSE							     IMMEDIATE
+
+enabled_PDBs_on_standby 					      2
+*
+FALSE							     IMMEDIATE
+
+fast_start_io_target						      3
+0
+FALSE							     IMMEDIATE
+
+fast_start_mttr_target						      3
+0
+FALSE							     IMMEDIATE
+
+log_checkpoints_to_alert					      1
+FALSE
+FALSE							     IMMEDIATE
+
+db_lost_write_protect						      2
+NONE
+FALSE							     IMMEDIATE
+
+recovery_parallelism						      3
+0
+FALSE							     IMMEDIATE
+
+enable_goldengate_replication					      1
+FALSE
+FALSE							     IMMEDIATE
+
+inmemory_adg_enabled						      1
+TRUE
+FALSE							     IMMEDIATE
+
+db_flashback_retention_target					      3
+1440
+FALSE							     IMMEDIATE
+
+data_transfer_cache_size					      6
+0
+FALSE							     IMMEDIATE
+
+enable_imc_with_mira						      1
+FALSE
+FALSE							     IMMEDIATE
+
+adg_account_info_tracking					      2
+LOCAL
+FALSE							     FALSE
+
+adg_redirect_dml						      1
+FALSE
+FALSE							     IMMEDIATE
+
+dml_locks							      3
+2076
+FALSE							     FALSE
+
+replication_dependency_tracking 				      1
+TRUE
+FALSE							     FALSE
+
+transactions							      3
+519
+FALSE							     FALSE
+
+transactions_per_rollback_segment				      3
+5
+FALSE							     FALSE
+
+temp_undo_enabled						      1
+FALSE
+TRUE							     IMMEDIATE
+
+rollback_segments						      2
+
+FALSE							     FALSE
+
+undo_management 						      2
+AUTO
+FALSE							     FALSE
+
+undo_tablespace 						      2
+UNDOTBS1
+FALSE							     IMMEDIATE
+
+undo_retention							      3
+900
+FALSE							     IMMEDIATE
+
+fast_start_parallel_rollback					      2
+LOW
+FALSE							     IMMEDIATE
+
+resumable_timeout						      3
+0
+TRUE							     IMMEDIATE
+
+instance_number 						      3
+0
+FALSE							     FALSE
+
+heat_map							      2
+OFF
+TRUE							     IMMEDIATE
+
+inmemory_size							      6
+0
+FALSE							     IMMEDIATE
+
+inmemory_xmem_size						      6
+0
+FALSE							     IMMEDIATE
+
+inmemory_prefer_xmem_memcompress				      2
+
+FALSE							     IMMEDIATE
+
+inmemory_prefer_xmem_priority					      2
+
+FALSE							     IMMEDIATE
+
+allow_rowid_column_type 					      1
+FALSE
+TRUE							     IMMEDIATE
+
+db_block_checking						      2
+FALSE
+FALSE							     IMMEDIATE
+
+recyclebin							      2
+
+NAME								   TYPE
+------------------------------------------------------------ ----------
+VALUE
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ISSES_MODIFIABLE					     ISSYS_MODIFIABLE
+------------------------------------------------------------ ------------------------------------------------------------
+on
+TRUE							     DEFERRED
+
+_compression_compatibility					      2
+19.0.0
+FALSE							     IMMEDIATE
+
+db_index_compression_inheritance				      2
+NONE
+TRUE							     IMMEDIATE
+
+db_securefile							      2
+PREFERRED
+TRUE							     IMMEDIATE
+
+inmemory_clause_default 					      2
+
+TRUE							     IMMEDIATE
+
+inmemory_force							      2
+DEFAULT
+FALSE							     IMMEDIATE
+
+inmemory_query							      2
+ENABLE
+TRUE							     IMMEDIATE
+
+inmemory_expressions_usage					      2
+ENABLE
+FALSE							     IMMEDIATE
+
+inmemory_virtual_columns					      2
+MANUAL
+FALSE							     IMMEDIATE
+
+inmemory_max_populate_servers					      3
+0
+FALSE							     IMMEDIATE
+
+inmemory_trickle_repopulate_servers_percent			      3
+1
+FALSE							     IMMEDIATE
+
+inmemory_optimized_arithmetic					      2
+DISABLE
+FALSE							     IMMEDIATE
+
+inmemory_automatic_level					      2
+OFF
+FALSE							     IMMEDIATE
+
+create_stored_outlines						      2
+
+TRUE							     IMMEDIATE
+
+serial_reuse							      2
+disable
+FALSE							     FALSE
+
+ldap_directory_access						      2
+NONE
+FALSE							     IMMEDIATE
+
+ldap_directory_sysauth						      2
+no
+FALSE							     FALSE
+
+os_roles							      1
+FALSE
+FALSE							     FALSE
+
+rdbms_server_dn 						      2
+
+FALSE							     FALSE
+
+remote_os_authent						      1
+FALSE
+FALSE							     FALSE
+
+remote_os_roles 						      1
+FALSE
+FALSE							     FALSE
+
+sec_case_sensitive_logon					      1
+TRUE
+FALSE							     IMMEDIATE
+
+remote_login_passwordfile					      2
+EXCLUSIVE
+FALSE							     FALSE
+
+license_max_users						      3
+0
+FALSE							     IMMEDIATE
+
+audit_sys_operations						      1
+TRUE
+FALSE							     FALSE
+
+DBFIPS_140							      1
+FALSE
+FALSE							     FALSE
+
+one_step_plugin_for_pdb_with_tde				      1
+FALSE
+FALSE							     IMMEDIATE
+
+external_keystore_credential_location				      2
+
+FALSE							     FALSE
+
+unified_audit_sga_queue_size					      3
+1048576
+FALSE							     FALSE
+
+wallet_root							      2
+
+FALSE							     FALSE
+
+tde_configuration						      2
+
+FALSE							     IMMEDIATE
+
+db_domain							      2
+
+FALSE							     FALSE
+
+global_names							      1
+FALSE
+TRUE							     IMMEDIATE
+
+distributed_lock_timeout					      3
+60
+FALSE							     FALSE
+
+commit_point_strength						      3
+1
+FALSE							     FALSE
+
+global_txn_processes						      3
+1
+FALSE							     IMMEDIATE
+
+instance_name							      2
+prod
+FALSE							     FALSE
+
+dispatchers							      2
+(PROTOCOL=TCP) (SERVICE=prodXDB)
+FALSE							     IMMEDIATE
+
+shared_servers							      3
+1
+FALSE							     IMMEDIATE
+
+max_shared_servers						      3
+
+FALSE							     IMMEDIATE
+
+max_dispatchers 						      3
+
+FALSE							     IMMEDIATE
+
+circuits							      3
+
+FALSE							     IMMEDIATE
+
+shared_server_sessions						      3
+
+FALSE							     IMMEDIATE
+
+use_dedicated_broker						      1
+FALSE
+FALSE							     IMMEDIATE
+
+connection_brokers						      2
+((TYPE=DEDICATED)(BROKERS=1)), ((TYPE=EMON)(BROKERS=1))
+FALSE							     IMMEDIATE
+
+local_listener							      2
+
+FALSE							     IMMEDIATE
+
+forward_listener						      2
+
+FALSE							     IMMEDIATE
+
+remote_listener 						      2
+
+FALSE							     IMMEDIATE
+
+listener_networks						      2
+
+
+NAME								   TYPE
+------------------------------------------------------------ ----------
+VALUE
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ISSES_MODIFIABLE					     ISSYS_MODIFIABLE
+------------------------------------------------------------ ------------------------------------------------------------
+FALSE							     IMMEDIATE
+
+cursor_space_for_time						      1
+FALSE
+FALSE							     FALSE
+
+session_cached_cursors						      3
+50
+TRUE							     DEFERRED
+
+remote_dependencies_mode					      2
+TIMESTAMP
+TRUE							     IMMEDIATE
+
+smtp_out_server 						      2
+
+TRUE							     IMMEDIATE
+
+plsql_v2_compatibility						      1
+FALSE
+TRUE							     IMMEDIATE
+
+plsql_warnings							      2
+DISABLE:ALL
+TRUE							     IMMEDIATE
+
+plsql_code_type 						      2
+INTERPRETED
+TRUE							     IMMEDIATE
+
+plsql_debug							      1
+FALSE
+TRUE							     IMMEDIATE
+
+plsql_optimize_level						      3
+2
+TRUE							     IMMEDIATE
+
+plsql_ccflags							      2
+
+TRUE							     IMMEDIATE
+
+plscope_settings						      2
+IDENTIFIERS:NONE
+TRUE							     IMMEDIATE
+
+permit_92_wrap_format						      1
+TRUE
+FALSE							     FALSE
+
+java_jit_enabled						      1
+TRUE
+TRUE							     IMMEDIATE
+
+java_restrict							      2
+none
+FALSE							     FALSE
+
+job_queue_processes						      3
+20
+FALSE							     IMMEDIATE
+
+scheduler_follow_pdbtz						      1
+FALSE
+FALSE							     IMMEDIATE
+
+parallel_min_percent						      3
+0
+TRUE							     FALSE
+
+create_bitmap_area_size 					      3
+8388608
+FALSE							     FALSE
+
+bitmap_merge_area_size						      3
+1048576
+FALSE							     FALSE
+
+cursor_sharing							      2
+EXACT
+TRUE							     IMMEDIATE
+
+result_cache_mode						      2
+MANUAL
+TRUE							     IMMEDIATE
+
+parallel_min_servers						      3
+2
+FALSE							     IMMEDIATE
+
+parallel_max_servers						      3
+20
+FALSE							     IMMEDIATE
+
+parallel_instance_group 					      2
+
+TRUE							     IMMEDIATE
+
+parallel_execution_message_size 				      3
+16384
+FALSE							     FALSE
+
+hash_area_size							      3
+131072
+TRUE							     FALSE
+
+private_temp_table_prefix					      2
+ORA$PTT_
+FALSE							     DEFERRED
+
+result_cache_max_size						      6
+3735552
+FALSE							     IMMEDIATE
+
+result_cache_max_result 					      3
+5
+FALSE							     IMMEDIATE
+
+result_cache_remote_expiration					      3
+0
+TRUE							     IMMEDIATE
+
+_key_vector_create_pushdown_threshold				      3
+20000
+TRUE							     IMMEDIATE
+
+shadow_core_dump						      2
+partial
+FALSE							     IMMEDIATE
+
+background_core_dump						      2
+partial
+FALSE							     IMMEDIATE
+
+background_dump_dest						      2
+/u01/app/oracle/product/19.0.0/dbhome_1/rdbms/log
+FALSE							     IMMEDIATE
+
+user_dump_dest							      2
+/u01/app/oracle/product/19.0.0/dbhome_1/rdbms/log
+FALSE							     IMMEDIATE
+
+core_dump_dest							      2
+/u01/app/oracle/diag/rdbms/prod/prod/cdump
+FALSE							     IMMEDIATE
+
+audit_file_dest 						      2
+/u01/app/oracle/admin/prod/adump
+FALSE							     DEFERRED
+
+audit_syslog_level						      2
+
+FALSE							     FALSE
+
+unified_audit_systemlog 					      2
+
+FALSE							     FALSE
+
+unified_audit_common_systemlog					      2
+
+FALSE							     FALSE
+
+resource_manage_goldengate					      1
+FALSE
+FALSE							     IMMEDIATE
+
+object_cache_optimal_size					      3
+10240000
+TRUE							     DEFERRED
+
+object_cache_max_size_percent					      3
+10
+TRUE							     DEFERRED
+
+lob_signature_enable						      1
+FALSE
+FALSE							     IMMEDIATE
+
+session_max_open_files						      3
+10
+FALSE							     FALSE
+
+open_links							      3
+4
+FALSE							     FALSE
+
+open_links_per_instance 					      3
+4
+FALSE							     FALSE
+
+commit_write							      2
+
+TRUE							     IMMEDIATE
+
+NAME								   TYPE
+------------------------------------------------------------ ----------
+VALUE
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ISSES_MODIFIABLE					     ISSYS_MODIFIABLE
+------------------------------------------------------------ ------------------------------------------------------------
+
+commit_wait							      2
+
+TRUE							     IMMEDIATE
+
+commit_logging							      2
+
+TRUE							     IMMEDIATE
+
+optimizer_features_enable					      2
+19.1.0
+TRUE							     IMMEDIATE
+
+fixed_date							      2
+
+FALSE							     IMMEDIATE
+
+audit_trail							      2
+DB, EXTENDED
+FALSE							     FALSE
+
+sort_area_size							      3
+65536
+TRUE							     DEFERRED
+
+sort_area_retained_size 					      3
+0
+TRUE							     DEFERRED
+
+cell_offload_processing 					      1
+TRUE
+TRUE							     IMMEDIATE
+
+cell_offload_decryption 					      1
+TRUE
+FALSE							     IMMEDIATE
+
+cell_offload_parameters 					      2
+
+TRUE							     IMMEDIATE
+
+cell_offload_compaction 					      2
+ADAPTIVE
+TRUE							     IMMEDIATE
+
+cell_offload_plan_display					      2
+AUTO
+TRUE							     IMMEDIATE
+
+db_name 							      2
+prod
+FALSE							     FALSE
+
+db_unique_name							      2
+prod
+FALSE							     FALSE
+
+open_cursors							      3
+300
+FALSE							     IMMEDIATE
+
+ifile								      4
+
+FALSE							     FALSE
+
+sql_trace							      1
+FALSE
+TRUE							     IMMEDIATE
+
+os_authent_prefix						      2
+ops$
+FALSE							     FALSE
+
+optimizer_mode							      2
+ALL_ROWS
+TRUE							     IMMEDIATE
+
+_optimizer_mode_force						      1
+TRUE
+TRUE							     IMMEDIATE
+
+sql92_security							      1
+TRUE
+FALSE							     FALSE
+
+blank_trimming							      1
+FALSE
+FALSE							     FALSE
+
+_always_anti_join						      2
+CHOOSE
+TRUE							     IMMEDIATE
+
+_b_tree_bitmap_plans						      1
+TRUE
+TRUE							     IMMEDIATE
+
+star_transformation_enabled					      2
+FALSE
+TRUE							     IMMEDIATE
+
+_optimizer_extended_cursor_sharing				      2
+UDO
+TRUE							     IMMEDIATE
+
+_optimizer_extended_cursor_sharing_rel				      2
+SIMPLE
+TRUE							     IMMEDIATE
+
+_optimizer_cost_model						      2
+CHOOSE
+TRUE							     IMMEDIATE
+
+_optimizer_system_stats_usage					      1
+TRUE
+TRUE							     IMMEDIATE
+
+_new_sort_cost_estimate 					      1
+TRUE
+TRUE							     IMMEDIATE
+
+_complex_view_merging						      1
+TRUE
+TRUE							     IMMEDIATE
+
+_unnest_subquery						      1
+TRUE
+TRUE							     IMMEDIATE
+
+_eliminate_common_subexpr					      1
+TRUE
+TRUE							     IMMEDIATE
+
+_pred_move_around						      1
+TRUE
+TRUE							     IMMEDIATE
+
+_optimizer_cost_based_transformation				      2
+LINEAR
+TRUE							     IMMEDIATE
+
+_push_join_predicate						      1
+TRUE
+TRUE							     IMMEDIATE
+
+_push_join_union_view						      1
+TRUE
+TRUE							     IMMEDIATE
+
+_push_join_union_view2						      1
+TRUE
+TRUE							     IMMEDIATE
+
+_fast_full_scan_enabled 					      1
+TRUE
+TRUE							     IMMEDIATE
+
+_optim_enhance_nnull_detection					      1
+TRUE
+TRUE							     IMMEDIATE
+
+_parallel_broadcast_enabled					      1
+TRUE
+TRUE							     IMMEDIATE
+
+parallel_degree_policy						      2
+MANUAL
+TRUE							     IMMEDIATE
+
+parallel_adaptive_multi_user					      1
+FALSE
+FALSE							     IMMEDIATE
+
+parallel_threads_per_cpu					      3
+1
+FALSE							     IMMEDIATE
+
+_always_semi_join						      2
+CHOOSE
+TRUE							     IMMEDIATE
+
+_ordered_nested_loop						      1
+TRUE
+TRUE							     IMMEDIATE
+
+_optimizer_max_permutations					      3
+2000
+TRUE							     IMMEDIATE
+
+optimizer_index_cost_adj					      3
+100
+TRUE							     IMMEDIATE
+
+
+NAME								   TYPE
+------------------------------------------------------------ ----------
+VALUE
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ISSES_MODIFIABLE					     ISSYS_MODIFIABLE
+------------------------------------------------------------ ------------------------------------------------------------
+optimizer_index_caching 					      3
+0
+TRUE							     IMMEDIATE
+
+_nlj_batching_enabled						      3
+1
+TRUE							     IMMEDIATE
+
+query_rewrite_enabled						      2
+TRUE
+TRUE							     IMMEDIATE
+
+query_rewrite_integrity 					      2
+enforced
+TRUE							     IMMEDIATE
+
+_left_nested_loops_random					      1
+TRUE
+TRUE							     IMMEDIATE
+
+_improved_row_length_enabled					      1
+TRUE
+TRUE							     IMMEDIATE
+
+_index_join_enabled						      1
+TRUE
+TRUE							     IMMEDIATE
+
+_improved_outerjoin_card					      1
+TRUE
+TRUE							     IMMEDIATE
+
+_use_column_stats_for_function					      1
+TRUE
+TRUE							     IMMEDIATE
+
+_subquery_pruning_mv_enabled					      1
+FALSE
+TRUE							     IMMEDIATE
+
+_or_expand_nvl_predicate					      1
+TRUE
+TRUE							     IMMEDIATE
+
+_table_scan_cost_plus_one					      1
+TRUE
+TRUE							     IMMEDIATE
+
+_new_initial_join_orders					      1
+TRUE
+TRUE							     IMMEDIATE
+
+_optim_peek_user_binds						      1
+TRUE
+TRUE							     IMMEDIATE
+
+pga_aggregate_target						      6
+0
+FALSE							     IMMEDIATE
+
+workarea_size_policy						      2
+AUTO
+TRUE							     IMMEDIATE
+
+_gs_anti_semi_join_allowed					      1
+TRUE
+TRUE							     IMMEDIATE
+
+optimizer_dynamic_sampling					      3
+2
+TRUE							     IMMEDIATE
+
+_union_rewrite_for_gs						      2
+YES_GSET_MVS
+TRUE							     IMMEDIATE
+
+_generalized_pruning_enabled					      1
+TRUE
+TRUE							     IMMEDIATE
+
+statistics_level						      2
+TYPICAL
+TRUE							     IMMEDIATE
+
+cursor_bind_capture_destination 				      2
+memory+disk
+TRUE							     IMMEDIATE
+
+skip_unusable_indexes						      1
+TRUE
+TRUE							     IMMEDIATE
+
+_ds_xt_split_count						      3
+1
+TRUE							     IMMEDIATE
+
+optimizer_ignore_hints						      1
+FALSE
+TRUE							     IMMEDIATE
+
+_cursor_plan_hash_version					      3
+1
+TRUE							     IMMEDIATE
+
+_optimizer_join_order_control					      3
+3
+TRUE							     IMMEDIATE
+
+_bloom_serial_filter						      2
+ON
+TRUE							     IMMEDIATE
+
+_sql_model_unfold_forloops					      2
+RUN_TIME
+TRUE							     IMMEDIATE
+
+optimizer_secure_view_merging					      1
+TRUE
+FALSE							     IMMEDIATE
+
+_optimizer_better_inlist_costing				      2
+ALL
+TRUE							     IMMEDIATE
+
+_optimizer_or_expansion 					      2
+DEPTH
+TRUE							     IMMEDIATE
+
+ddl_lock_timeout						      3
+0
+TRUE							     IMMEDIATE
+
+deferred_segment_creation					      1
+TRUE
+TRUE							     IMMEDIATE
+
+optimizer_use_pending_statistics				      1
+FALSE
+TRUE							     IMMEDIATE
+
+optimizer_capture_sql_plan_baselines				      1
+FALSE
+TRUE							     IMMEDIATE
+
+optimizer_use_sql_plan_baselines				      1
+TRUE
+TRUE							     IMMEDIATE
+
+_optimizer_native_full_outer_join				      2
+FORCE
+TRUE							     IMMEDIATE
+
+_pivot_implementation_method					      2
+CHOOSE
+TRUE							     IMMEDIATE
+
+parallel_min_time_threshold					      2
+AUTO
+TRUE							     IMMEDIATE
+
+parallel_degree_limit						      2
+CPU
+TRUE							     IMMEDIATE
+
+parallel_force_local						      1
+FALSE
+TRUE							     IMMEDIATE
+
+optimizer_use_invisible_indexes 				      1
+FALSE
+TRUE							     IMMEDIATE
+
+_optimizer_extended_stats_usage_control 			      3
+192
+TRUE							     IMMEDIATE
+
+dst_upgrade_insert_conv 					      1
+TRUE
+TRUE							     IMMEDIATE
+
+parallel_servers_target 					      3
+8
+FALSE							     IMMEDIATE
+
+_optimizer_use_cbqt_star_transformation 			      1
+TRUE
+TRUE							     IMMEDIATE
+
+_optimizer_try_st_before_jppd					      1
+TRUE
+TRUE							     IMMEDIATE
+
+max_string_size 						      2
+
+NAME								   TYPE
+------------------------------------------------------------ ----------
+VALUE
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ISSES_MODIFIABLE					     ISSYS_MODIFIABLE
+------------------------------------------------------------ ------------------------------------------------------------
+STANDARD
+FALSE							     IMMEDIATE
+
+_px_groupby_pushdown						      2
+FORCE
+TRUE							     IMMEDIATE
+
+optimizer_adaptive_reporting_only				      1
+FALSE
+TRUE							     IMMEDIATE
+
+_px_wif_dfo_declumping						      2
+CHOOSE
+TRUE							     IMMEDIATE
+
+_px_partial_rollup_pushdown					      2
+ADAPTIVE
+TRUE							     IMMEDIATE
+
+optimizer_adaptive_plans					      1
+TRUE
+TRUE							     IMMEDIATE
+
+_optimizer_proc_rate_level					      2
+BASIC
+TRUE							     IMMEDIATE
+
+_optimizer_cluster_by_rowid_control				      3
+129
+TRUE							     IMMEDIATE
+
+_optimizer_cbqt_or_expansion					      2
+ON
+TRUE							     IMMEDIATE
+
+optimizer_inmemory_aware					      1
+TRUE
+TRUE							     IMMEDIATE
+
+_mv_access_compute_fresh_data					      2
+ON
+TRUE							     IMMEDIATE
+
+_optimizer_ads_use_partial_results				      1
+TRUE
+TRUE							     IMMEDIATE
+
+cursor_invalidation						      2
+IMMEDIATE
+TRUE							     IMMEDIATE
+
+approx_for_aggregation						      1
+FALSE
+TRUE							     IMMEDIATE
+
+approx_for_count_distinct					      1
+FALSE
+TRUE							     IMMEDIATE
+
+_px_dist_agg_partial_rollup_pushdown				      2
+ADAPTIVE
+TRUE							     IMMEDIATE
+
+_xt_sampling_scan_granules					      2
+ON
+TRUE							     IMMEDIATE
+
+approx_for_percentile						      2
+none
+TRUE							     IMMEDIATE
+
+_optimizer_control_shard_qry_processing 			      3
+65528
+TRUE							     IMMEDIATE
+
+optimizer_adaptive_statistics					      1
+FALSE
+TRUE							     IMMEDIATE
+
+optimizer_ignore_parallel_hints 				      1
+FALSE
+TRUE							     IMMEDIATE
+
+_px_shared_hash_join						      1
+FALSE
+TRUE							     IMMEDIATE
+
+parallel_min_degree						      2
+1
+TRUE							     IMMEDIATE
+
+sec_protocol_error_trace_action 				      2
+TRACE
+FALSE							     IMMEDIATE
+
+sec_protocol_error_further_action				      2
+(DROP,3)
+FALSE							     IMMEDIATE
+
+sec_max_failed_login_attempts					      3
+3
+FALSE							     FALSE
+
+sec_return_server_release_banner				      1
+FALSE
+FALSE							     FALSE
+
+enable_ddl_logging						      1
+FALSE
+TRUE							     IMMEDIATE
+
+client_result_cache_size					      6
+0
+FALSE							     FALSE
+
+client_result_cache_lag 					      6
+3000
+FALSE							     FALSE
+
+outbound_dblink_protocols					      2
+ALL
+FALSE							     IMMEDIATE
+
+allow_global_dblinks						      1
+FALSE
+FALSE							     IMMEDIATE
+
+client_statistics_level 					      2
+TYPICAL
+FALSE							     DEFERRED
+
+aq_tm_processes 						      3
+1
+TRUE							     IMMEDIATE
+
+hs_autoregister 						      1
+TRUE
+FALSE							     IMMEDIATE
+
+xml_db_events							      2
+enable
+TRUE							     IMMEDIATE
+
+dg_broker_start 						      1
+FALSE
+FALSE							     IMMEDIATE
+
+dg_broker_config_file1						      2
+/u01/app/oracle/product/19.0.0/dbhome_1/dbs/dr1prod.dat
+FALSE							     IMMEDIATE
+
+dg_broker_config_file2						      2
+/u01/app/oracle/product/19.0.0/dbhome_1/dbs/dr2prod.dat
+FALSE							     IMMEDIATE
+
+olap_page_pool_size						      6
+0
+TRUE							     DEFERRED
+
+asm_diskstring							      2
+
+TRUE							     IMMEDIATE
+
+asm_preferred_read_failure_groups				      2
+
+FALSE							     IMMEDIATE
+
+control_management_pack_access					      2
+DIAGNOSTIC+TUNING
+FALSE							     IMMEDIATE
+
+awr_pdb_autoflush_enabled					      1
+FALSE
+FALSE							     IMMEDIATE
+
+awr_pdb_max_parallel_slaves					      3
+10
+FALSE							     IMMEDIATE
+
+awr_snapshot_time_offset					      3
+0
+FALSE							     IMMEDIATE
+
+sqltune_category						      2
+DEFAULT
+TRUE							     IMMEDIATE
+
+_sqltune_category_parsed					      2
+DEFAULT
+TRUE							     IMMEDIATE
+
+autotask_max_active_pdbs					      3
+2
+
+NAME								   TYPE
+------------------------------------------------------------ ----------
+VALUE
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ISSES_MODIFIABLE					     ISSYS_MODIFIABLE
+------------------------------------------------------------ ------------------------------------------------------------
+FALSE							     IMMEDIATE
+
+enable_automatic_maintenance_pdb				      1
+TRUE
+FALSE							     IMMEDIATE
+
+spatial_vector_acceleration					      1
+FALSE
+TRUE							     IMMEDIATE
+
+diagnostic_dest 						      2
+/u01/app/oracle
+FALSE							     IMMEDIATE
+
+_diag_adr_trace_dest						      2
+/u01/app/oracle/diag/rdbms/prod/prod/trace
+FALSE							     FALSE
+
+tracefile_identifier						      2
+
+TRUE							     FALSE
+
+max_dump_file_size						      2
+unlimited
+TRUE							     IMMEDIATE
+
+trace_enabled							      1
+TRUE
+FALSE							     IMMEDIATE
+
+cell_offloadgroup_name						      2
+
+TRUE							     IMMEDIATE
+
+enable_pluggable_database					      1
+FALSE
+FALSE							     FALSE
+
+pdb_os_credential						      2
+
+FALSE							     FALSE
+
+pdb_file_name_convert						      2
+
+TRUE							     IMMEDIATE
+
+noncdb_compatible						      1
+FALSE
+FALSE							     FALSE
+
+common_user_prefix						      2
+C##
+FALSE							     FALSE
+
+target_pdbs							      3
+0
+FALSE							     FALSE
+
+max_pdbs							      3
+254
+FALSE							     IMMEDIATE
+
+cdb_cluster							      1
+FALSE
+FALSE							     FALSE
+
+cdb_cluster_name						      2
+
+FALSE							     FALSE
+
+standby_pdb_source_file_directory				      2
+
+FALSE							     IMMEDIATE
+
+standby_pdb_source_file_dblink					      2
+
+FALSE							     IMMEDIATE
+
+remote_recovery_file_dest					      2
+
+FALSE							     IMMEDIATE
+
+disable_pdb_feature						      6
+0
+FALSE							     IMMEDIATE
+
+containers_parallel_degree					      3
+65535
+TRUE							     IMMEDIATE
+
+default_sharing 						      2
+metadata
+TRUE							     IMMEDIATE
+
+pdb_lockdown							      2
+
+TRUE							     IMMEDIATE
+
+pdb_template							      2
+
+TRUE							     IMMEDIATE
+
+shrd_dupl_table_refresh_rate					      3
+60
+FALSE							     IMMEDIATE
+
+multishard_query_data_consistency				      2
+strong
+TRUE							     IMMEDIATE
+
+multishard_query_partial_results				      2
+not allowed
+TRUE							     IMMEDIATE
+
+
+511 rows selected.
+
+SQL> set lin 200 pages 200
+SQL> /
+
+NAME								   TYPE
+------------------------------------------------------------ ----------
+VALUE
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ISSES_MODIFIABLE					     ISSYS_MODIFIABLE
+------------------------------------------------------------ ------------------------------------------------------------
+lock_name_space 						      2
+
+FALSE							     FALSE
+
+processes							      3
+300
+FALSE							     FALSE
+
+sessions							      3
+472
+FALSE							     IMMEDIATE
+
+timed_statistics						      1
+TRUE
+TRUE							     IMMEDIATE
+
+timed_os_statistics						      3
+0
+TRUE							     IMMEDIATE
+
+resource_limit							      1
+TRUE
+FALSE							     IMMEDIATE
+
+license_max_sessions						      3
+0
+FALSE							     IMMEDIATE
+
+license_sessions_warning					      3
+0
+FALSE							     IMMEDIATE
+
+long_module_action						      1
+TRUE
+FALSE							     IMMEDIATE
+
+standby_db_preserve_states					      2
+NONE
+FALSE							     FALSE
+
+instance_abort_delay_time					      3
+0
+FALSE							     IMMEDIATE
+
+cpu_count							      3
+1
+FALSE							     IMMEDIATE
+
+cpu_min_count							      2
+1
+FALSE							     IMMEDIATE
+
+instance_groups 						      2
+
+FALSE							     FALSE
+
+event								      2
+
+FALSE							     FALSE
+
+sga_max_size							      6
+1493172224
+FALSE							     FALSE
+
+use_large_pages 						      2
+FALSE
+FALSE							     FALSE
+
+pre_page_sga							      1
+TRUE
+FALSE							     FALSE
+
+shared_memory_address						      3
+0
+FALSE							     FALSE
+
+hi_shared_memory_address					      3
+0
+FALSE							     FALSE
+
+lock_sga							      1
+FALSE
+FALSE							     FALSE
+
+processor_group_name						      2
+
+FALSE							     FALSE
+
+allow_group_access_to_sga					      1
+FALSE
+FALSE							     FALSE
+
+sga_min_size							      6
+0
+FALSE							     IMMEDIATE
+
+shared_pool_size						      6
+0
+FALSE							     IMMEDIATE
+
+large_pool_size 						      6
+0
+FALSE							     IMMEDIATE
+
+java_pool_size							      6
+0
+FALSE							     IMMEDIATE
+
+streams_pool_size						      6
+0
+FALSE							     IMMEDIATE
+
+shared_pool_reserved_size					      6
+19293798
+FALSE							     FALSE
+
+java_soft_sessionspace_limit					      3
+0
+FALSE							     FALSE
+
+java_max_sessionspace_size					      3
+0
+FALSE							     FALSE
+
+pga_aggregate_limit						      6
+2147483648
+FALSE							     IMMEDIATE
+
+spfile								      2
+/u01/app/oracle/product/19.0.0/dbhome_1/dbs/spfileprod.ora
+FALSE							     IMMEDIATE
+
+instance_type							      2
+RDBMS
+FALSE							     FALSE
+
+_ksb_restart_policy_times					      2
+0, 60, 120, 240
+FALSE							     IMMEDIATE
+
+uniform_log_timestamp_format					      1
+TRUE
+FALSE							     IMMEDIATE
+
+nls_language							      2
+AMERICAN
+TRUE							     FALSE
+
+nls_territory							      2
+AMERICA
+TRUE							     FALSE
+
+nls_sort							      2
+
+TRUE							     FALSE
+
+nls_date_language						      2
+
+TRUE							     FALSE
+
+nls_date_format 						      2
+
+TRUE							     FALSE
+
+nls_currency							      2
+
+TRUE							     FALSE
+
+nls_numeric_characters						      2
+
+TRUE							     FALSE
+
+nls_iso_currency						      2
+
+TRUE							     FALSE
+
+nls_calendar							      2
+
+TRUE							     FALSE
+
+nls_time_format 						      2
+
+TRUE							     FALSE
+
+nls_timestamp_format						      2
+
+TRUE							     FALSE
+
+nls_time_tz_format						      2
+
+TRUE							     FALSE
+
+nls_timestamp_tz_format 					      2
+
+NAME								   TYPE
+------------------------------------------------------------ ----------
+VALUE
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ISSES_MODIFIABLE					     ISSYS_MODIFIABLE
+------------------------------------------------------------ ------------------------------------------------------------
+
+TRUE							     FALSE
+
+nls_dual_currency						      2
+
+TRUE							     FALSE
+
+nls_comp							      2
+BINARY
+TRUE							     FALSE
+
+nls_length_semantics						      2
+BYTE
+TRUE							     IMMEDIATE
+
+nls_nchar_conv_excp						      2
+FALSE
+TRUE							     IMMEDIATE
+
+disk_asynch_io							      1
+TRUE
+FALSE							     FALSE
+
+tape_asynch_io							      1
+TRUE
+FALSE							     FALSE
+
+dbwr_io_slaves							      3
+0
+FALSE							     FALSE
+
+backup_tape_io_slaves						      1
+FALSE
+FALSE							     DEFERRED
+
+fileio_network_adapters 					      2
+
+FALSE							     FALSE
+
+filesystemio_options						      2
+none
+FALSE							     FALSE
+
+dnfs_batch_size 						      3
+4096
+FALSE							     FALSE
+
+clonedb 							      1
+FALSE
+FALSE							     FALSE
+
+instant_restore 						      1
+FALSE
+FALSE							     FALSE
+
+http_proxy							      2
+
+FALSE							     IMMEDIATE
+
+ssl_wallet							      2
+
+FALSE							     IMMEDIATE
+
+ofs_threads							      3
+4
+FALSE							     IMMEDIATE
+
+resource_manager_cpu_allocation 				      3
+1
+FALSE							     IMMEDIATE
+
+resource_manager_plan						      2
+SCHEDULER[0x4D56]:DEFAULT_MAINTENANCE_PLAN
+FALSE							     IMMEDIATE
+
+db_performance_profile						      2
+
+FALSE							     IMMEDIATE
+
+max_iops							      3
+0
+FALSE							     IMMEDIATE
+
+max_mbps							      3
+0
+FALSE							     IMMEDIATE
+
+max_idle_time							      3
+0
+FALSE							     IMMEDIATE
+
+max_idle_blocker_time						      3
+0
+FALSE							     IMMEDIATE
+
+cluster_interconnects						      2
+
+FALSE							     FALSE
+
+file_mapping							      1
+FALSE
+FALSE							     IMMEDIATE
+
+max_datapump_jobs_per_pdb					      2
+100
+FALSE							     IMMEDIATE
+
+max_datapump_parallel_per_job					      2
+50
+FALSE							     IMMEDIATE
+
+service_names							      2
+prod
+FALSE							     IMMEDIATE
+
+threaded_execution						      1
+FALSE
+FALSE							     FALSE
+
+clonedb_dir							      2
+
+FALSE							     FALSE
+
+enable_dnfs_dispatcher						      1
+FALSE
+FALSE							     FALSE
+
+_hang_resolution_scope						      2
+OFF
+FALSE							     IMMEDIATE
+
+gcs_server_processes						      3
+0
+FALSE							     FALSE
+
+active_instance_count						      3
+
+FALSE							     FALSE
+
+instance_mode							      2
+READ-WRITE
+FALSE							     FALSE
+
+sga_target							      6
+0
+FALSE							     IMMEDIATE
+
+memory_target							      6
+1493172224
+FALSE							     IMMEDIATE
+
+memory_max_target						      6
+1493172224
+FALSE							     FALSE
+
+control_files							      2
+/u01/app/oracle/oradata/PROD/control01.ctl, /u01/app/oracle/fast_recovery_area/PROD/control02.ctl
+FALSE							     FALSE
+
+db_file_name_convert						      2
+
+TRUE							     FALSE
+
+log_file_name_convert						      2
+
+FALSE							     FALSE
+
+control_file_record_keep_time					      3
+7
+FALSE							     IMMEDIATE
+
+db_block_buffers						      3
+0
+FALSE							     FALSE
+
+db_block_checksum						      2
+TYPICAL
+FALSE							     IMMEDIATE
+
+db_ultra_safe							      2
+OFF
+FALSE							     FALSE
+
+db_block_size							      3
+8192
+FALSE							     FALSE
+
+db_cache_size							      6
+0
+FALSE							     IMMEDIATE
+
+db_2k_cache_size						      6
+0
+
+NAME								   TYPE
+------------------------------------------------------------ ----------
+VALUE
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ISSES_MODIFIABLE					     ISSYS_MODIFIABLE
+------------------------------------------------------------ ------------------------------------------------------------
+FALSE							     IMMEDIATE
+
+db_4k_cache_size						      6
+0
+FALSE							     IMMEDIATE
+
+db_8k_cache_size						      6
+0
+FALSE							     IMMEDIATE
+
+db_16k_cache_size						      6
+0
+FALSE							     IMMEDIATE
+
+db_32k_cache_size						      6
+0
+FALSE							     IMMEDIATE
+
+db_keep_cache_size						      6
+0
+FALSE							     IMMEDIATE
+
+db_recycle_cache_size						      6
+0
+FALSE							     IMMEDIATE
+
+memoptimize_pool_size						      6
+0
+FALSE							     IMMEDIATE
+
+db_big_table_cache_percent_target				      2
+0
+FALSE							     IMMEDIATE
+
+encrypt_new_tablespaces 					      2
+CLOUD_ONLY
+FALSE							     IMMEDIATE
+
+db_writer_processes						      3
+1
+FALSE							     FALSE
+
+buffer_pool_keep						      2
+
+FALSE							     FALSE
+
+buffer_pool_recycle						      2
+
+FALSE							     FALSE
+
+db_flash_cache_file						      2
+
+FALSE							     IMMEDIATE
+
+db_flash_cache_size						      6
+0
+FALSE							     IMMEDIATE
+
+db_cache_advice 						      2
+ON
+FALSE							     IMMEDIATE
+
+compatible							      2
+19.0.0
+FALSE							     FALSE
+
+log_archive_dest_1						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_2						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_3						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_4						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_5						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_6						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_7						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_8						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_9						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_10						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_11						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_12						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_13						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_14						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_15						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_16						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_17						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_18						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_19						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_20						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_21						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_22						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_23						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_24						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_25						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_26						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_27						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_28						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_29						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_30						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_31						      2
+
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_1					      2
+enable
+TRUE							     IMMEDIATE
+
+NAME								   TYPE
+------------------------------------------------------------ ----------
+VALUE
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ISSES_MODIFIABLE					     ISSYS_MODIFIABLE
+------------------------------------------------------------ ------------------------------------------------------------
+
+log_archive_dest_state_2					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_3					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_4					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_5					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_6					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_7					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_8					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_9					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_10					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_11					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_12					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_13					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_14					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_15					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_16					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_17					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_18					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_19					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_20					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_21					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_22					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_23					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_24					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_25					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_26					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_27					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_28					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_29					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_30					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_dest_state_31					      2
+enable
+TRUE							     IMMEDIATE
+
+log_archive_start						      1
+FALSE
+FALSE							     FALSE
+
+log_archive_dest						      2
+
+FALSE							     IMMEDIATE
+
+log_archive_duplex_dest 					      2
+
+FALSE							     IMMEDIATE
+
+log_archive_min_succeed_dest					      3
+1
+TRUE							     IMMEDIATE
+
+fal_client							      2
+
+FALSE							     IMMEDIATE
+
+fal_server							      2
+
+FALSE							     IMMEDIATE
+
+log_archive_trace						      3
+0
+FALSE							     IMMEDIATE
+
+data_guard_sync_latency 					      3
+0
+FALSE							     IMMEDIATE
+
+log_archive_config						      2
+
+FALSE							     IMMEDIATE
+
+log_archive_format						      2
+%t_%s_%r.dbf
+FALSE							     FALSE
+
+data_guard_max_io_time						      3
+240
+FALSE							     IMMEDIATE
+
+data_guard_max_longio_time					      3
+240
+FALSE							     IMMEDIATE
+
+redo_transport_user						      2
+
+FALSE							     IMMEDIATE
+
+log_archive_max_processes					      3
+4
+FALSE							     IMMEDIATE
+
+log_buffer							      6
+7536640
+FALSE							     FALSE
+
+log_checkpoint_interval 					      3
+0
+FALSE							     IMMEDIATE
+
+log_checkpoint_timeout						      3
+1800
+FALSE							     IMMEDIATE
+
+archive_lag_target						      3
+0
+FALSE							     IMMEDIATE
+
+
+NAME								   TYPE
+------------------------------------------------------------ ----------
+VALUE
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ISSES_MODIFIABLE					     ISSYS_MODIFIABLE
+------------------------------------------------------------ ------------------------------------------------------------
+db_files							      3
+200
+FALSE							     FALSE
+
+db_file_multiblock_read_count					      3
+82
+TRUE							     IMMEDIATE
+
+read_only_open_delayed						      1
+FALSE
+FALSE							     FALSE
+
+cluster_database						      1
+FALSE
+FALSE							     FALSE
+
+cluster_database_instances					      3
+1
+FALSE							     FALSE
+
+db_create_file_dest						      2
+
+TRUE							     IMMEDIATE
+
+db_create_online_log_dest_1					      2
+
+TRUE							     IMMEDIATE
+
+db_create_online_log_dest_2					      2
+
+TRUE							     IMMEDIATE
+
+db_create_online_log_dest_3					      2
+
+TRUE							     IMMEDIATE
+
+db_create_online_log_dest_4					      2
+
+TRUE							     IMMEDIATE
+
+db_create_online_log_dest_5					      2
+
+TRUE							     IMMEDIATE
+
+db_recovery_file_dest						      2
+/u01/app/oracle/fast_recovery_area
+FALSE							     IMMEDIATE
+
+db_recovery_file_dest_size					      6
+8657043456
+FALSE							     IMMEDIATE
+
+standby_file_management 					      2
+MANUAL
+FALSE							     IMMEDIATE
+
+db_unrecoverable_scn_tracking					      1
+TRUE
+TRUE							     IMMEDIATE
+
+thread								      3
+0
+FALSE							     IMMEDIATE
+
+enabled_PDBs_on_standby 					      2
+*
+FALSE							     IMMEDIATE
+
+fast_start_io_target						      3
+0
+FALSE							     IMMEDIATE
+
+fast_start_mttr_target						      3
+0
+FALSE							     IMMEDIATE
+
+log_checkpoints_to_alert					      1
+FALSE
+FALSE							     IMMEDIATE
+
+db_lost_write_protect						      2
+NONE
+FALSE							     IMMEDIATE
+
+recovery_parallelism						      3
+0
+FALSE							     IMMEDIATE
+
+enable_goldengate_replication					      1
+FALSE
+FALSE							     IMMEDIATE
+
+inmemory_adg_enabled						      1
+TRUE
+FALSE							     IMMEDIATE
+
+db_flashback_retention_target					      3
+1440
+FALSE							     IMMEDIATE
+
+data_transfer_cache_size					      6
+0
+FALSE							     IMMEDIATE
+
+enable_imc_with_mira						      1
+FALSE
+FALSE							     IMMEDIATE
+
+adg_account_info_tracking					      2
+LOCAL
+FALSE							     FALSE
+
+adg_redirect_dml						      1
+FALSE
+FALSE							     IMMEDIATE
+
+dml_locks							      3
+2076
+FALSE							     FALSE
+
+replication_dependency_tracking 				      1
+TRUE
+FALSE							     FALSE
+
+transactions							      3
+519
+FALSE							     FALSE
+
+transactions_per_rollback_segment				      3
+5
+FALSE							     FALSE
+
+temp_undo_enabled						      1
+FALSE
+TRUE							     IMMEDIATE
+
+rollback_segments						      2
+
+FALSE							     FALSE
+
+undo_management 						      2
+AUTO
+FALSE							     FALSE
+
+undo_tablespace 						      2
+UNDOTBS1
+FALSE							     IMMEDIATE
+
+undo_retention							      3
+900
+FALSE							     IMMEDIATE
+
+fast_start_parallel_rollback					      2
+LOW
+FALSE							     IMMEDIATE
+
+resumable_timeout						      3
+0
+TRUE							     IMMEDIATE
+
+instance_number 						      3
+0
+FALSE							     FALSE
+
+heat_map							      2
+OFF
+TRUE							     IMMEDIATE
+
+inmemory_size							      6
+0
+FALSE							     IMMEDIATE
+
+inmemory_xmem_size						      6
+0
+FALSE							     IMMEDIATE
+
+inmemory_prefer_xmem_memcompress				      2
+
+FALSE							     IMMEDIATE
+
+inmemory_prefer_xmem_priority					      2
+
+FALSE							     IMMEDIATE
+
+allow_rowid_column_type 					      1
+FALSE
+TRUE							     IMMEDIATE
+
+db_block_checking						      2
+FALSE
+FALSE							     IMMEDIATE
+
+recyclebin							      2
+
+NAME								   TYPE
+------------------------------------------------------------ ----------
+VALUE
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ISSES_MODIFIABLE					     ISSYS_MODIFIABLE
+------------------------------------------------------------ ------------------------------------------------------------
+on
+TRUE							     DEFERRED
+
+_compression_compatibility					      2
+19.0.0
+FALSE							     IMMEDIATE
+
+db_index_compression_inheritance				      2
+NONE
+TRUE							     IMMEDIATE
+
+db_securefile							      2
+PREFERRED
+TRUE							     IMMEDIATE
+
+inmemory_clause_default 					      2
+
+TRUE							     IMMEDIATE
+
+inmemory_force							      2
+DEFAULT
+FALSE							     IMMEDIATE
+
+inmemory_query							      2
+ENABLE
+TRUE							     IMMEDIATE
+
+inmemory_expressions_usage					      2
+ENABLE
+FALSE							     IMMEDIATE
+
+inmemory_virtual_columns					      2
+MANUAL
+FALSE							     IMMEDIATE
+
+inmemory_max_populate_servers					      3
+0
+FALSE							     IMMEDIATE
+
+inmemory_trickle_repopulate_servers_percent			      3
+1
+FALSE							     IMMEDIATE
+
+inmemory_optimized_arithmetic					      2
+DISABLE
+FALSE							     IMMEDIATE
+
+inmemory_automatic_level					      2
+OFF
+FALSE							     IMMEDIATE
+
+create_stored_outlines						      2
+
+TRUE							     IMMEDIATE
+
+serial_reuse							      2
+disable
+FALSE							     FALSE
+
+ldap_directory_access						      2
+NONE
+FALSE							     IMMEDIATE
+
+ldap_directory_sysauth						      2
+no
+FALSE							     FALSE
+
+os_roles							      1
+FALSE
+FALSE							     FALSE
+
+rdbms_server_dn 						      2
+
+FALSE							     FALSE
+
+remote_os_authent						      1
+FALSE
+FALSE							     FALSE
+
+remote_os_roles 						      1
+FALSE
+FALSE							     FALSE
+
+sec_case_sensitive_logon					      1
+TRUE
+FALSE							     IMMEDIATE
+
+remote_login_passwordfile					      2
+EXCLUSIVE
+FALSE							     FALSE
+
+license_max_users						      3
+0
+FALSE							     IMMEDIATE
+
+audit_sys_operations						      1
+TRUE
+FALSE							     FALSE
+
+DBFIPS_140							      1
+FALSE
+FALSE							     FALSE
+
+one_step_plugin_for_pdb_with_tde				      1
+FALSE
+FALSE							     IMMEDIATE
+
+external_keystore_credential_location				      2
+
+FALSE							     FALSE
+
+unified_audit_sga_queue_size					      3
+1048576
+FALSE							     FALSE
+
+wallet_root							      2
+
+FALSE							     FALSE
+
+tde_configuration						      2
+
+FALSE							     IMMEDIATE
+
+db_domain							      2
+
+FALSE							     FALSE
+
+global_names							      1
+FALSE
+TRUE							     IMMEDIATE
+
+distributed_lock_timeout					      3
+60
+FALSE							     FALSE
+
+commit_point_strength						      3
+1
+FALSE							     FALSE
+
+global_txn_processes						      3
+1
+FALSE							     IMMEDIATE
+
+instance_name							      2
+prod
+FALSE							     FALSE
+
+dispatchers							      2
+(PROTOCOL=TCP) (SERVICE=prodXDB)
+FALSE							     IMMEDIATE
+
+shared_servers							      3
+1
+FALSE							     IMMEDIATE
+
+max_shared_servers						      3
+
+FALSE							     IMMEDIATE
+
+max_dispatchers 						      3
+
+FALSE							     IMMEDIATE
+
+circuits							      3
+
+FALSE							     IMMEDIATE
+
+shared_server_sessions						      3
+
+FALSE							     IMMEDIATE
+
+use_dedicated_broker						      1
+FALSE
+FALSE							     IMMEDIATE
+
+connection_brokers						      2
+((TYPE=DEDICATED)(BROKERS=1)), ((TYPE=EMON)(BROKERS=1))
+FALSE							     IMMEDIATE
+
+local_listener							      2
+
+FALSE							     IMMEDIATE
+
+forward_listener						      2
+
+FALSE							     IMMEDIATE
+
+remote_listener 						      2
+
+FALSE							     IMMEDIATE
+
+listener_networks						      2
+
+
+NAME								   TYPE
+------------------------------------------------------------ ----------
+VALUE
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ISSES_MODIFIABLE					     ISSYS_MODIFIABLE
+------------------------------------------------------------ ------------------------------------------------------------
+FALSE							     IMMEDIATE
+
+cursor_space_for_time						      1
+FALSE
+FALSE							     FALSE
+
+session_cached_cursors						      3
+50
+TRUE							     DEFERRED
+
+remote_dependencies_mode					      2
+TIMESTAMP
+TRUE							     IMMEDIATE
+
+smtp_out_server 						      2
+
+TRUE							     IMMEDIATE
+
+plsql_v2_compatibility						      1
+FALSE
+TRUE							     IMMEDIATE
+
+plsql_warnings							      2
+DISABLE:ALL
+TRUE							     IMMEDIATE
+
+plsql_code_type 						      2
+INTERPRETED
+TRUE							     IMMEDIATE
+
+plsql_debug							      1
+FALSE
+TRUE							     IMMEDIATE
+
+plsql_optimize_level						      3
+2
+TRUE							     IMMEDIATE
+
+plsql_ccflags							      2
+
+TRUE							     IMMEDIATE
+
+plscope_settings						      2
+IDENTIFIERS:NONE
+TRUE							     IMMEDIATE
+
+permit_92_wrap_format						      1
+TRUE
+FALSE							     FALSE
+
+java_jit_enabled						      1
+TRUE
+TRUE							     IMMEDIATE
+
+java_restrict							      2
+none
+FALSE							     FALSE
+
+job_queue_processes						      3
+20
+FALSE							     IMMEDIATE
+
+scheduler_follow_pdbtz						      1
+FALSE
+FALSE							     IMMEDIATE
+
+parallel_min_percent						      3
+0
+TRUE							     FALSE
+
+create_bitmap_area_size 					      3
+8388608
+FALSE							     FALSE
+
+bitmap_merge_area_size						      3
+1048576
+FALSE							     FALSE
+
+cursor_sharing							      2
+EXACT
+TRUE							     IMMEDIATE
+
+result_cache_mode						      2
+MANUAL
+TRUE							     IMMEDIATE
+
+parallel_min_servers						      3
+2
+FALSE							     IMMEDIATE
+
+parallel_max_servers						      3
+20
+FALSE							     IMMEDIATE
+
+parallel_instance_group 					      2
+
+TRUE							     IMMEDIATE
+
+parallel_execution_message_size 				      3
+16384
+FALSE							     FALSE
+
+hash_area_size							      3
+131072
+TRUE							     FALSE
+
+private_temp_table_prefix					      2
+ORA$PTT_
+FALSE							     DEFERRED
+
+result_cache_max_size						      6
+3735552
+FALSE							     IMMEDIATE
+
+result_cache_max_result 					      3
+5
+FALSE							     IMMEDIATE
+
+result_cache_remote_expiration					      3
+0
+TRUE							     IMMEDIATE
+
+_key_vector_create_pushdown_threshold				      3
+20000
+TRUE							     IMMEDIATE
+
+shadow_core_dump						      2
+partial
+FALSE							     IMMEDIATE
+
+background_core_dump						      2
+partial
+FALSE							     IMMEDIATE
+
+background_dump_dest						      2
+/u01/app/oracle/product/19.0.0/dbhome_1/rdbms/log
+FALSE							     IMMEDIATE
+
+user_dump_dest							      2
+/u01/app/oracle/product/19.0.0/dbhome_1/rdbms/log
+FALSE							     IMMEDIATE
+
+core_dump_dest							      2
+/u01/app/oracle/diag/rdbms/prod/prod/cdump
+FALSE							     IMMEDIATE
+
+audit_file_dest 						      2
+/u01/app/oracle/admin/prod/adump
+FALSE							     DEFERRED
+
+audit_syslog_level						      2
+
+FALSE							     FALSE
+
+unified_audit_systemlog 					      2
+
+FALSE							     FALSE
+
+unified_audit_common_systemlog					      2
+
+FALSE							     FALSE
+
+resource_manage_goldengate					      1
+FALSE
+FALSE							     IMMEDIATE
+
+object_cache_optimal_size					      3
+10240000
+TRUE							     DEFERRED
+
+object_cache_max_size_percent					      3
+10
+TRUE							     DEFERRED
+
+lob_signature_enable						      1
+FALSE
+FALSE							     IMMEDIATE
+
+session_max_open_files						      3
+10
+FALSE							     FALSE
+
+open_links							      3
+4
+FALSE							     FALSE
+
+open_links_per_instance 					      3
+4
+FALSE							     FALSE
+
+commit_write							      2
+
+TRUE							     IMMEDIATE
+
+NAME								   TYPE
+------------------------------------------------------------ ----------
+VALUE
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ISSES_MODIFIABLE					     ISSYS_MODIFIABLE
+------------------------------------------------------------ ------------------------------------------------------------
+
+commit_wait							      2
+
+TRUE							     IMMEDIATE
+
+commit_logging							      2
+
+TRUE							     IMMEDIATE
+
+optimizer_features_enable					      2
+19.1.0
+TRUE							     IMMEDIATE
+
+fixed_date							      2
+
+FALSE							     IMMEDIATE
+
+audit_trail							      2
+DB, EXTENDED
+FALSE							     FALSE
+
+sort_area_size							      3
+65536
+TRUE							     DEFERRED
+
+sort_area_retained_size 					      3
+0
+TRUE							     DEFERRED
+
+cell_offload_processing 					      1
+TRUE
+TRUE							     IMMEDIATE
+
+cell_offload_decryption 					      1
+TRUE
+FALSE							     IMMEDIATE
+
+cell_offload_parameters 					      2
+
+TRUE							     IMMEDIATE
+
+cell_offload_compaction 					      2
+ADAPTIVE
+TRUE							     IMMEDIATE
+
+cell_offload_plan_display					      2
+AUTO
+TRUE							     IMMEDIATE
+
+db_name 							      2
+prod
+FALSE							     FALSE
+
+db_unique_name							      2
+prod
+FALSE							     FALSE
+
+open_cursors							      3
+300
+FALSE							     IMMEDIATE
+
+ifile								      4
+
+FALSE							     FALSE
+
+sql_trace							      1
+FALSE
+TRUE							     IMMEDIATE
+
+os_authent_prefix						      2
+ops$
+FALSE							     FALSE
+
+optimizer_mode							      2
+ALL_ROWS
+TRUE							     IMMEDIATE
+
+_optimizer_mode_force						      1
+TRUE
+TRUE							     IMMEDIATE
+
+sql92_security							      1
+TRUE
+FALSE							     FALSE
+
+blank_trimming							      1
+FALSE
+FALSE							     FALSE
+
+_always_anti_join						      2
+CHOOSE
+TRUE							     IMMEDIATE
+
+_b_tree_bitmap_plans						      1
+TRUE
+TRUE							     IMMEDIATE
+
+star_transformation_enabled					      2
+FALSE
+TRUE							     IMMEDIATE
+
+_optimizer_extended_cursor_sharing				      2
+UDO
+TRUE							     IMMEDIATE
+
+_optimizer_extended_cursor_sharing_rel				      2
+SIMPLE
+TRUE							     IMMEDIATE
+
+_optimizer_cost_model						      2
+CHOOSE
+TRUE							     IMMEDIATE
+
+_optimizer_system_stats_usage					      1
+TRUE
+TRUE							     IMMEDIATE
+
+_new_sort_cost_estimate 					      1
+TRUE
+TRUE							     IMMEDIATE
+
+_complex_view_merging						      1
+TRUE
+TRUE							     IMMEDIATE
+
+_unnest_subquery						      1
+TRUE
+TRUE							     IMMEDIATE
+
+_eliminate_common_subexpr					      1
+TRUE
+TRUE							     IMMEDIATE
+
+_pred_move_around						      1
+TRUE
+TRUE							     IMMEDIATE
+
+_optimizer_cost_based_transformation				      2
+LINEAR
+TRUE							     IMMEDIATE
+
+_push_join_predicate						      1
+TRUE
+TRUE							     IMMEDIATE
+
+_push_join_union_view						      1
+TRUE
+TRUE							     IMMEDIATE
+
+_push_join_union_view2						      1
+TRUE
+TRUE							     IMMEDIATE
+
+_fast_full_scan_enabled 					      1
+TRUE
+TRUE							     IMMEDIATE
+
+_optim_enhance_nnull_detection					      1
+TRUE
+TRUE							     IMMEDIATE
+
+_parallel_broadcast_enabled					      1
+TRUE
+TRUE							     IMMEDIATE
+
+parallel_degree_policy						      2
+MANUAL
+TRUE							     IMMEDIATE
+
+parallel_adaptive_multi_user					      1
+FALSE
+FALSE							     IMMEDIATE
+
+parallel_threads_per_cpu					      3
+1
+FALSE							     IMMEDIATE
+
+_always_semi_join						      2
+CHOOSE
+TRUE							     IMMEDIATE
+
+_ordered_nested_loop						      1
+TRUE
+TRUE							     IMMEDIATE
+
+_optimizer_max_permutations					      3
+2000
+TRUE							     IMMEDIATE
+
+optimizer_index_cost_adj					      3
+100
+TRUE							     IMMEDIATE
+
+
+NAME								   TYPE
+------------------------------------------------------------ ----------
+VALUE
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ISSES_MODIFIABLE					     ISSYS_MODIFIABLE
+------------------------------------------------------------ ------------------------------------------------------------
+optimizer_index_caching 					      3
+0
+TRUE							     IMMEDIATE
+
+_nlj_batching_enabled						      3
+1
+TRUE							     IMMEDIATE
+
+query_rewrite_enabled						      2
+TRUE
+TRUE							     IMMEDIATE
+
+query_rewrite_integrity 					      2
+enforced
+TRUE							     IMMEDIATE
+
+_left_nested_loops_random					      1
+TRUE
+TRUE							     IMMEDIATE
+
+_improved_row_length_enabled					      1
+TRUE
+TRUE							     IMMEDIATE
+
+_index_join_enabled						      1
+TRUE
+TRUE							     IMMEDIATE
+
+_improved_outerjoin_card					      1
+TRUE
+TRUE							     IMMEDIATE
+
+_use_column_stats_for_function					      1
+TRUE
+TRUE							     IMMEDIATE
+
+_subquery_pruning_mv_enabled					      1
+FALSE
+TRUE							     IMMEDIATE
+
+_or_expand_nvl_predicate					      1
+TRUE
+TRUE							     IMMEDIATE
+
+_table_scan_cost_plus_one					      1
+TRUE
+TRUE							     IMMEDIATE
+
+_new_initial_join_orders					      1
+TRUE
+TRUE							     IMMEDIATE
+
+_optim_peek_user_binds						      1
+TRUE
+TRUE							     IMMEDIATE
+
+pga_aggregate_target						      6
+0
+FALSE							     IMMEDIATE
+
+workarea_size_policy						      2
+AUTO
+TRUE							     IMMEDIATE
+
+_gs_anti_semi_join_allowed					      1
+TRUE
+TRUE							     IMMEDIATE
+
+optimizer_dynamic_sampling					      3
+2
+TRUE							     IMMEDIATE
+
+_union_rewrite_for_gs						      2
+YES_GSET_MVS
+TRUE							     IMMEDIATE
+
+_generalized_pruning_enabled					      1
+TRUE
+TRUE							     IMMEDIATE
+
+statistics_level						      2
+TYPICAL
+TRUE							     IMMEDIATE
+
+cursor_bind_capture_destination 				      2
+memory+disk
+TRUE							     IMMEDIATE
+
+skip_unusable_indexes						      1
+TRUE
+TRUE							     IMMEDIATE
+
+_ds_xt_split_count						      3
+1
+TRUE							     IMMEDIATE
+
+optimizer_ignore_hints						      1
+FALSE
+TRUE							     IMMEDIATE
+
+_cursor_plan_hash_version					      3
+1
+TRUE							     IMMEDIATE
+
+_optimizer_join_order_control					      3
+3
+TRUE							     IMMEDIATE
+
+_bloom_serial_filter						      2
+ON
+TRUE							     IMMEDIATE
+
+_sql_model_unfold_forloops					      2
+RUN_TIME
+TRUE							     IMMEDIATE
+
+optimizer_secure_view_merging					      1
+TRUE
+FALSE							     IMMEDIATE
+
+_optimizer_better_inlist_costing				      2
+ALL
+TRUE							     IMMEDIATE
+
+_optimizer_or_expansion 					      2
+DEPTH
+TRUE							     IMMEDIATE
+
+ddl_lock_timeout						      3
+0
+TRUE							     IMMEDIATE
+
+deferred_segment_creation					      1
+TRUE
+TRUE							     IMMEDIATE
+
+optimizer_use_pending_statistics				      1
+FALSE
+TRUE							     IMMEDIATE
+
+optimizer_capture_sql_plan_baselines				      1
+FALSE
+TRUE							     IMMEDIATE
+
+optimizer_use_sql_plan_baselines				      1
+TRUE
+TRUE							     IMMEDIATE
+
+_optimizer_native_full_outer_join				      2
+FORCE
+TRUE							     IMMEDIATE
+
+_pivot_implementation_method					      2
+CHOOSE
+TRUE							     IMMEDIATE
+
+parallel_min_time_threshold					      2
+AUTO
+TRUE							     IMMEDIATE
+
+parallel_degree_limit						      2
+CPU
+TRUE							     IMMEDIATE
+
+parallel_force_local						      1
+FALSE
+TRUE							     IMMEDIATE
+
+optimizer_use_invisible_indexes 				      1
+FALSE
+TRUE							     IMMEDIATE
+
+_optimizer_extended_stats_usage_control 			      3
+192
+TRUE							     IMMEDIATE
+
+dst_upgrade_insert_conv 					      1
+TRUE
+TRUE							     IMMEDIATE
+
+parallel_servers_target 					      3
+8
+FALSE							     IMMEDIATE
+
+_optimizer_use_cbqt_star_transformation 			      1
+TRUE
+TRUE							     IMMEDIATE
+
+_optimizer_try_st_before_jppd					      1
+TRUE
+TRUE							     IMMEDIATE
+
+max_string_size 						      2
+
+NAME								   TYPE
+------------------------------------------------------------ ----------
+VALUE
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ISSES_MODIFIABLE					     ISSYS_MODIFIABLE
+------------------------------------------------------------ ------------------------------------------------------------
+STANDARD
+FALSE							     IMMEDIATE
+
+_px_groupby_pushdown						      2
+FORCE
+TRUE							     IMMEDIATE
+
+optimizer_adaptive_reporting_only				      1
+FALSE
+TRUE							     IMMEDIATE
+
+_px_wif_dfo_declumping						      2
+CHOOSE
+TRUE							     IMMEDIATE
+
+_px_partial_rollup_pushdown					      2
+ADAPTIVE
+TRUE							     IMMEDIATE
+
+optimizer_adaptive_plans					      1
+TRUE
+TRUE							     IMMEDIATE
+
+_optimizer_proc_rate_level					      2
+BASIC
+TRUE							     IMMEDIATE
+
+_optimizer_cluster_by_rowid_control				      3
+129
+TRUE							     IMMEDIATE
+
+_optimizer_cbqt_or_expansion					      2
+ON
+TRUE							     IMMEDIATE
+
+optimizer_inmemory_aware					      1
+TRUE
+TRUE							     IMMEDIATE
+
+_mv_access_compute_fresh_data					      2
+ON
+TRUE							     IMMEDIATE
+
+_optimizer_ads_use_partial_results				      1
+TRUE
+TRUE							     IMMEDIATE
+
+cursor_invalidation						      2
+IMMEDIATE
+TRUE							     IMMEDIATE
+
+approx_for_aggregation						      1
+FALSE
+TRUE							     IMMEDIATE
+
+approx_for_count_distinct					      1
+FALSE
+TRUE							     IMMEDIATE
+
+_px_dist_agg_partial_rollup_pushdown				      2
+ADAPTIVE
+TRUE							     IMMEDIATE
+
+_xt_sampling_scan_granules					      2
+ON
+TRUE							     IMMEDIATE
+
+approx_for_percentile						      2
+none
+TRUE							     IMMEDIATE
+
+_optimizer_control_shard_qry_processing 			      3
+65528
+TRUE							     IMMEDIATE
+
+optimizer_adaptive_statistics					      1
+FALSE
+TRUE							     IMMEDIATE
+
+optimizer_ignore_parallel_hints 				      1
+FALSE
+TRUE							     IMMEDIATE
+
+_px_shared_hash_join						      1
+FALSE
+TRUE							     IMMEDIATE
+
+parallel_min_degree						      2
+1
+TRUE							     IMMEDIATE
+
+sec_protocol_error_trace_action 				      2
+TRACE
+FALSE							     IMMEDIATE
+
+sec_protocol_error_further_action				      2
+(DROP,3)
+FALSE							     IMMEDIATE
+
+sec_max_failed_login_attempts					      3
+3
+FALSE							     FALSE
+
+sec_return_server_release_banner				      1
+FALSE
+FALSE							     FALSE
+
+enable_ddl_logging						      1
+FALSE
+TRUE							     IMMEDIATE
+
+client_result_cache_size					      6
+0
+FALSE							     FALSE
+
+client_result_cache_lag 					      6
+3000
+FALSE							     FALSE
+
+outbound_dblink_protocols					      2
+ALL
+FALSE							     IMMEDIATE
+
+allow_global_dblinks						      1
+FALSE
+FALSE							     IMMEDIATE
+
+client_statistics_level 					      2
+TYPICAL
+FALSE							     DEFERRED
+
+aq_tm_processes 						      3
+1
+TRUE							     IMMEDIATE
+
+hs_autoregister 						      1
+TRUE
+FALSE							     IMMEDIATE
+
+xml_db_events							      2
+enable
+TRUE							     IMMEDIATE
+
+dg_broker_start 						      1
+FALSE
+FALSE							     IMMEDIATE
+
+dg_broker_config_file1						      2
+/u01/app/oracle/product/19.0.0/dbhome_1/dbs/dr1prod.dat
+FALSE							     IMMEDIATE
+
+dg_broker_config_file2						      2
+/u01/app/oracle/product/19.0.0/dbhome_1/dbs/dr2prod.dat
+FALSE							     IMMEDIATE
+
+olap_page_pool_size						      6
+0
+TRUE							     DEFERRED
+
+asm_diskstring							      2
+
+TRUE							     IMMEDIATE
+
+asm_preferred_read_failure_groups				      2
+
+FALSE							     IMMEDIATE
+
+control_management_pack_access					      2
+DIAGNOSTIC+TUNING
+FALSE							     IMMEDIATE
+
+awr_pdb_autoflush_enabled					      1
+FALSE
+FALSE							     IMMEDIATE
+
+awr_pdb_max_parallel_slaves					      3
+10
+FALSE							     IMMEDIATE
+
+awr_snapshot_time_offset					      3
+0
+FALSE							     IMMEDIATE
+
+sqltune_category						      2
+DEFAULT
+TRUE							     IMMEDIATE
+
+_sqltune_category_parsed					      2
+DEFAULT
+TRUE							     IMMEDIATE
+
+autotask_max_active_pdbs					      3
+2
+
+NAME								   TYPE
+------------------------------------------------------------ ----------
+VALUE
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ISSES_MODIFIABLE					     ISSYS_MODIFIABLE
+------------------------------------------------------------ ------------------------------------------------------------
+FALSE							     IMMEDIATE
+
+enable_automatic_maintenance_pdb				      1
+TRUE
+FALSE							     IMMEDIATE
+
+spatial_vector_acceleration					      1
+FALSE
+TRUE							     IMMEDIATE
+
+diagnostic_dest 						      2
+/u01/app/oracle
+FALSE							     IMMEDIATE
+
+_diag_adr_trace_dest						      2
+/u01/app/oracle/diag/rdbms/prod/prod/trace
+FALSE							     FALSE
+
+tracefile_identifier						      2
+
+TRUE							     FALSE
+
+max_dump_file_size						      2
+unlimited
+TRUE							     IMMEDIATE
+
+trace_enabled							      1
+TRUE
+FALSE							     IMMEDIATE
+
+cell_offloadgroup_name						      2
+
+TRUE							     IMMEDIATE
+
+enable_pluggable_database					      1
+FALSE
+FALSE							     FALSE
+
+pdb_os_credential						      2
+
+FALSE							     FALSE
+
+pdb_file_name_convert						      2
+
+TRUE							     IMMEDIATE
+
+noncdb_compatible						      1
+FALSE
+FALSE							     FALSE
+
+common_user_prefix						      2
+C##
+FALSE							     FALSE
+
+target_pdbs							      3
+0
+FALSE							     FALSE
+
+max_pdbs							      3
+254
+FALSE							     IMMEDIATE
+
+cdb_cluster							      1
+FALSE
+FALSE							     FALSE
+
+cdb_cluster_name						      2
+
+FALSE							     FALSE
+
+standby_pdb_source_file_directory				      2
+
+FALSE							     IMMEDIATE
+
+standby_pdb_source_file_dblink					      2
+
+FALSE							     IMMEDIATE
+
+remote_recovery_file_dest					      2
+
+FALSE							     IMMEDIATE
+
+disable_pdb_feature						      6
+0
+FALSE							     IMMEDIATE
+
+containers_parallel_degree					      3
+65535
+TRUE							     IMMEDIATE
+
+default_sharing 						      2
+metadata
+TRUE							     IMMEDIATE
+
+pdb_lockdown							      2
+
+TRUE							     IMMEDIATE
+
+pdb_template							      2
+
+TRUE							     IMMEDIATE
+
+shrd_dupl_table_refresh_rate					      3
+60
+FALSE							     IMMEDIATE
+
+multishard_query_data_consistency				      2
+strong
+TRUE							     IMMEDIATE
+
+multishard_query_partial_results				      2
+not allowed
+TRUE							     IMMEDIATE
+
+
+511 rows selected.
+
+SQL> desc v$parameter 
+ Name														   Null?    Type
+ ----------------------------------------------------------------------------------------------------------------- -------- ----------------------------------------------------------------------------
+ NUM															    NUMBER
+ NAME															    VARCHAR2(80)
+ TYPE															    NUMBER
+ VALUE															    VARCHAR2(4000)
+ DISPLAY_VALUE														    VARCHAR2(4000)
+ DEFAULT_VALUE														    VARCHAR2(255)
+ ISDEFAULT														    VARCHAR2(9)
+ ISSES_MODIFIABLE													    VARCHAR2(5)
+ ISSYS_MODIFIABLE													    VARCHAR2(9)
+ ISPDB_MODIFIABLE													    VARCHAR2(5)
+ ISINSTANCE_MODIFIABLE													    VARCHAR2(5)
+ ISMODIFIED														    VARCHAR2(10)
+ ISADJUSTED														    VARCHAR2(5)
+ ISDEPRECATED														    VARCHAR2(5)
+ ISBASIC														    VARCHAR2(5)
+ DESCRIPTION														    VARCHAR2(255)
+ UPDATE_COMMENT 													    VARCHAR2(255)
+ HASH															    NUMBER
+ CON_ID 														    NUMBER
+
+SQL> select VALUE from v$parameter where NAME 'db_block_size';
+select VALUE from v$parameter where NAME 'db_block_size'
+                                         *
+ERROR at line 1:
+ORA-00920: invalid relational operator
+
+
+SQL> SELECT value FROM v$parameter WHERE name = 'db_block_size';
+
+VALUE
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+8192
+
+SQL> ANALYZE TABLE employees COMPUTE STATISTICS;
+
+SELECT blocks, empty_blocks, num_rows
+FROM user_tables
+WHERE table_name='EMPLOYEES';
+ANALYZE TABLE employees COMPUTE STATISTICS
+              *
+ERROR at line 1:
+ORA-00942: table or view does not exist
+
+
+SQL> SQL>   2    3  
+no rows selected
+
+SQL> ANALYZE TABLE employees COMPUTE STATISTICS;
+ANALYZE TABLE employees COMPUTE STATISTICS
+              *
+ERROR at line 1:
+ORA-00942: table or view does not exist
+
+
+SQL> SELECT blocks, empty_blocks, num_rows
+FROM user_tables
+WHERE table_name='EMPLOYEES';          
+  4  
+SQL> decs user_tables
+SP2-0734: unknown command beginning "decs user_..." - rest of line ignored.
+SQL> desc user_tables;
+ Name														   Null?    Type
+ ----------------------------------------------------------------------------------------------------------------- -------- ----------------------------------------------------------------------------
+ TABLE_NAME													   NOT NULL VARCHAR2(128)
+ TABLESPACE_NAME													    VARCHAR2(30)
+ CLUSTER_NAME														    VARCHAR2(128)
+ IOT_NAME														    VARCHAR2(128)
+ STATUS 														    VARCHAR2(8)
+ PCT_FREE														    NUMBER
+ PCT_USED														    NUMBER
+ INI_TRANS														    NUMBER
+ MAX_TRANS														    NUMBER
+ INITIAL_EXTENT 													    NUMBER
+ NEXT_EXTENT														    NUMBER
+ MIN_EXTENTS														    NUMBER
+ MAX_EXTENTS														    NUMBER
+ PCT_INCREASE														    NUMBER
+ FREELISTS														    NUMBER
+ FREELIST_GROUPS													    NUMBER
+ LOGGING														    VARCHAR2(3)
+ BACKED_UP														    VARCHAR2(1)
+ NUM_ROWS														    NUMBER
+ BLOCKS 														    NUMBER
+ EMPTY_BLOCKS														    NUMBER
+ AVG_SPACE														    NUMBER
+ CHAIN_CNT														    NUMBER
+ AVG_ROW_LEN														    NUMBER
+ AVG_SPACE_FREELIST_BLOCKS												    NUMBER
+ NUM_FREELIST_BLOCKS													    NUMBER
+ DEGREE 														    VARCHAR2(10)
+ INSTANCES														    VARCHAR2(10)
+ CACHE															    VARCHAR2(5)
+ TABLE_LOCK														    VARCHAR2(8)
+ SAMPLE_SIZE														    NUMBER
+ LAST_ANALYZED														    DATE
+ PARTITIONED														    VARCHAR2(3)
+ IOT_TYPE														    VARCHAR2(12)
+ TEMPORARY														    VARCHAR2(1)
+ SECONDARY														    VARCHAR2(1)
+ NESTED 														    VARCHAR2(3)
+ BUFFER_POOL														    VARCHAR2(7)
+ FLASH_CACHE														    VARCHAR2(7)
+ CELL_FLASH_CACHE													    VARCHAR2(7)
+ ROW_MOVEMENT														    VARCHAR2(8)
+ GLOBAL_STATS														    VARCHAR2(3)
+ USER_STATS														    VARCHAR2(3)
+ DURATION														    VARCHAR2(15)
+ SKIP_CORRUPT														    VARCHAR2(8)
+ MONITORING														    VARCHAR2(3)
+ CLUSTER_OWNER														    VARCHAR2(128)
+ DEPENDENCIES														    VARCHAR2(8)
+ COMPRESSION														    VARCHAR2(8)
+ COMPRESS_FOR														    VARCHAR2(30)
+ DROPPED														    VARCHAR2(3)
+ READ_ONLY														    VARCHAR2(3)
+ SEGMENT_CREATED													    VARCHAR2(3)
+ RESULT_CACHE														    VARCHAR2(7)
+ CLUSTERING														    VARCHAR2(3)
+ ACTIVITY_TRACKING													    VARCHAR2(23)
+ DML_TIMESTAMP														    VARCHAR2(25)
+ HAS_IDENTITY														    VARCHAR2(3)
+ CONTAINER_DATA 													    VARCHAR2(3)
+ INMEMORY														    VARCHAR2(8)
+ INMEMORY_PRIORITY													    VARCHAR2(8)
+ INMEMORY_DISTRIBUTE													    VARCHAR2(15)
+ INMEMORY_COMPRESSION													    VARCHAR2(17)
+ INMEMORY_DUPLICATE													    VARCHAR2(13)
+ DEFAULT_COLLATION													    VARCHAR2(100)
+ DUPLICATED														    VARCHAR2(1)
+ SHARDED														    VARCHAR2(1)
+ EXTERNAL														    VARCHAR2(3)
+ HYBRID 														    VARCHAR2(3)
+ CELLMEMORY														    VARCHAR2(24)
+ CONTAINERS_DEFAULT													    VARCHAR2(3)
+ CONTAINER_MAP														    VARCHAR2(3)
+ EXTENDED_DATA_LINK													    VARCHAR2(3)
+ EXTENDED_DATA_LINK_MAP 												    VARCHAR2(3)
+ INMEMORY_SERVICE													    VARCHAR2(12)
+ INMEMORY_SERVICE_NAME													    VARCHAR2(1000)
+ CONTAINER_MAP_OBJECT													    VARCHAR2(3)
+ MEMOPTIMIZE_READ													    VARCHAR2(8)
+ MEMOPTIMIZE_WRITE													    VARCHAR2(8)
+ HAS_SENSITIVE_COLUMN													    VARCHAR2(3)
+ ADMIT_NULL														    VARCHAR2(3)
+ DATA_LINK_DML_ENABLED													    VARCHAR2(3)
+ LOGICAL_REPLICATION													    VARCHAR2(8)
+
+SQL> col TABLE_NAME for a60
+SQL> select TABLESPACE_NAME,TABLE_NAME ,EMPTY_BLOCKS,NUM_ROWS from user_tables where table_name='EMPLOYEES';
+
+no rows selected
+
+SQL> desc dba_extends;
+ERROR:
+ORA-04043: object dba_extends does not exist
+
+
+SQL> desc dba_extents;
+ Name														   Null?    Type
+ ----------------------------------------------------------------------------------------------------------------- -------- ----------------------------------------------------------------------------
+ OWNER															    VARCHAR2(128)
+ SEGMENT_NAME														    VARCHAR2(128)
+ PARTITION_NAME 													    VARCHAR2(128)
+ SEGMENT_TYPE														    VARCHAR2(18)
+ TABLESPACE_NAME													    VARCHAR2(30)
+ EXTENT_ID														    NUMBER
+ FILE_ID														    NUMBER
+ BLOCK_ID														    NUMBER
+ BYTES															    NUMBER
+ BLOCKS 														    NUMBER
+ RELATIVE_FNO														    NUMBER
+
+SQL> col SEGMENT_NAME	for a60
+SQL> select SEGMENT_NAME , FILE_ID,BLOCK_ID from dba_extents where segment_name = 'EMPLOYEES'
+  2  ;
+
+SEGMENT_NAME							FILE_ID   BLOCK_ID
+------------------------------------------------------------ ---------- ----------
+EMPLOYEES							      3      31272
+EMPLOYEES							      7        472
+
+SQL> SELECT file_id, file_name
+FROM dba_data_files;
+  2  
+   FILE_ID FILE_NAME
+---------- ------------------------------------------------------------
+	 1 /u01/app/oracle/oradata/PROD/system01.dbf
+	 3 /u01/app/oracle/oradata/PROD/sysaux01.dbf
+	 5 /u01/app/oracle/oradata/PROD/binayak01.dbf
+	 7 /u01/app/oracle/oradata/PROD/users01.dbf
+	 4 /u01/app/oracle/oradata/PROD/undotbs01.dbf
+
+SQL> show parameter undo;
+
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+temp_undo_enabled		     boolean	 FALSE
+undo_management 		     string	 AUTO
+undo_retention			     integer	 900
+undo_tablespace 		     string	 UNDOTBS1
+SQL> desc dba_tablespaces;
+ Name														   Null?    Type
+ ----------------------------------------------------------------------------------------------------------------- -------- ----------------------------------------------------------------------------
+ TABLESPACE_NAME												   NOT NULL VARCHAR2(30)
+ BLOCK_SIZE													   NOT NULL NUMBER
+ INITIAL_EXTENT 													    NUMBER
+ NEXT_EXTENT														    NUMBER
+ MIN_EXTENTS													   NOT NULL NUMBER
+ MAX_EXTENTS														    NUMBER
+ MAX_SIZE														    NUMBER
+ PCT_INCREASE														    NUMBER
+ MIN_EXTLEN														    NUMBER
+ STATUS 														    VARCHAR2(9)
+ CONTENTS														    VARCHAR2(21)
+ LOGGING														    VARCHAR2(9)
+ FORCE_LOGGING														    VARCHAR2(3)
+ EXTENT_MANAGEMENT													    VARCHAR2(10)
+ ALLOCATION_TYPE													    VARCHAR2(9)
+ PLUGGED_IN														    VARCHAR2(3)
+ SEGMENT_SPACE_MANAGEMENT												    VARCHAR2(6)
+ DEF_TAB_COMPRESSION													    VARCHAR2(8)
+ RETENTION														    VARCHAR2(11)
+ BIGFILE														    VARCHAR2(3)
+ PREDICATE_EVALUATION													    VARCHAR2(7)
+ ENCRYPTED														    VARCHAR2(3)
+ COMPRESS_FOR														    VARCHAR2(30)
+ DEF_INMEMORY														    VARCHAR2(8)
+ DEF_INMEMORY_PRIORITY													    VARCHAR2(8)
+ DEF_INMEMORY_DISTRIBUTE												    VARCHAR2(15)
+ DEF_INMEMORY_COMPRESSION												    VARCHAR2(17)
+ DEF_INMEMORY_DUPLICATE 												    VARCHAR2(13)
+ SHARED 														    VARCHAR2(13)
+ DEF_INDEX_COMPRESSION													    VARCHAR2(8)
+ INDEX_COMPRESS_FOR													    VARCHAR2(13)
+ DEF_CELLMEMORY 													    VARCHAR2(14)
+ DEF_INMEMORY_SERVICE													    VARCHAR2(12)
+ DEF_INMEMORY_SERVICE_NAME												    VARCHAR2(1000)
+ LOST_WRITE_PROTECT													    VARCHAR2(7)
+ CHUNK_TABLESPACE													    VARCHAR2(1)
+
+SQL> select CONTENTS from dba_tablespaces;
+
+CONTENTS
+---------------------
+PERMANENT
+PERMANENT
+UNDO
+TEMPORARY
+PERMANENT
+TEMPORARY
+PERMANENT
+
+7 rows selected.
+
+SQL> select TABLESPACE_NAME,STATUS from  dba_tablespaces where CONTENTS='UNDO';
+
+TABLESPACE_NAME 	       STATUS
+------------------------------ ---------
+UNDOTBS1		       ONLINE
+
+SQL> desc dba_segments;
+ Name														   Null?    Type
+ ----------------------------------------------------------------------------------------------------------------- -------- ----------------------------------------------------------------------------
+ OWNER															    VARCHAR2(128)
+ SEGMENT_NAME														    VARCHAR2(128)
+ PARTITION_NAME 													    VARCHAR2(128)
+ SEGMENT_TYPE														    VARCHAR2(18)
+ SEGMENT_SUBTYPE													    VARCHAR2(10)
+ TABLESPACE_NAME													    VARCHAR2(30)
+ HEADER_FILE														    NUMBER
+ HEADER_BLOCK														    NUMBER
+ BYTES															    NUMBER
+ BLOCKS 														    NUMBER
+ EXTENTS														    NUMBER
+ INITIAL_EXTENT 													    NUMBER
+ NEXT_EXTENT														    NUMBER
+ MIN_EXTENTS														    NUMBER
+ MAX_EXTENTS														    NUMBER
+ MAX_SIZE														    NUMBER
+ RETENTION														    VARCHAR2(7)
+ MINRETENTION														    NUMBER
+ PCT_INCREASE														    NUMBER
+ FREELISTS														    NUMBER
+ FREELIST_GROUPS													    NUMBER
+ RELATIVE_FNO														    NUMBER
+ BUFFER_POOL														    VARCHAR2(7)
+ FLASH_CACHE														    VARCHAR2(7)
+ CELL_FLASH_CACHE													    VARCHAR2(7)
+ INMEMORY														    VARCHAR2(8)
+ INMEMORY_PRIORITY													    VARCHAR2(8)
+ INMEMORY_DISTRIBUTE													    VARCHAR2(15)
+ INMEMORY_DUPLICATE													    VARCHAR2(13)
+ INMEMORY_COMPRESSION													    VARCHAR2(17)
+ CELLMEMORY														    VARCHAR2(24)
+
+SQL> col SEGMENT_NAME for a60
+SQL> select SEGMENT_NAME,BYTES/1026/1024 MB from dba_segments where tablespace_name='UNDOTBS1';
+
+SEGMENT_NAME							     MB
+------------------------------------------------------------ ----------
+_SYSSMU1_1261223759$					     5.11500975
+_SYSSMU2_27624015$					     8.17153996
+_SYSSMU3_2421748942$					     6.11306043
+_SYSSMU4_625702278$					     4.11695906
+_SYSSMU5_2101348960$					     6.11306043
+_SYSSMU6_813816332$					     6.11306043
+_SYSSMU7_2329891355$					     5.11500975
+_SYSSMU8_399776867$					     4.11695906
+_SYSSMU9_1692468413$					     4.11695906
+_SYSSMU10_930580995$					     8.10916179
+
+10 rows selected.
+
+SQL> select * from demo26.employees;
+
+     EMPID EMPNAME			      DEPTID	 SALARY
+---------- ------------------------------ ---------- ----------
+	 1 Ron					   2	   3000
+	 2 Harry				   1	   4000
+	 3 Hermoiny				   3	  10000
+
+SQL> desc dba_segments;
+ Name														   Null?    Type
+ ----------------------------------------------------------------------------------------------------------------- -------- ----------------------------------------------------------------------------
+ OWNER															    VARCHAR2(128)
+ SEGMENT_NAME														    VARCHAR2(128)
+ PARTITION_NAME 													    VARCHAR2(128)
+ SEGMENT_TYPE														    VARCHAR2(18)
+ SEGMENT_SUBTYPE													    VARCHAR2(10)
+ TABLESPACE_NAME													    VARCHAR2(30)
+ HEADER_FILE														    NUMBER
+ HEADER_BLOCK														    NUMBER
+ BYTES															    NUMBER
+ BLOCKS 														    NUMBER
+ EXTENTS														    NUMBER
+ INITIAL_EXTENT 													    NUMBER
+ NEXT_EXTENT														    NUMBER
+ MIN_EXTENTS														    NUMBER
+ MAX_EXTENTS														    NUMBER
+ MAX_SIZE														    NUMBER
+ RETENTION														    VARCHAR2(7)
+ MINRETENTION														    NUMBER
+ PCT_INCREASE														    NUMBER
+ FREELISTS														    NUMBER
+ FREELIST_GROUPS													    NUMBER
+ RELATIVE_FNO														    NUMBER
+ BUFFER_POOL														    VARCHAR2(7)
+ FLASH_CACHE														    VARCHAR2(7)
+ CELL_FLASH_CACHE													    VARCHAR2(7)
+ INMEMORY														    VARCHAR2(8)
+ INMEMORY_PRIORITY													    VARCHAR2(8)
+ INMEMORY_DISTRIBUTE													    VARCHAR2(15)
+ INMEMORY_DUPLICATE													    VARCHAR2(13)
+ INMEMORY_COMPRESSION													    VARCHAR2(17)
+ CELLMEMORY														    VARCHAR2(24)
+
+SQL> col SEGMENT_NAME for a60
+SQL> select SEGMENT_NAME,sum(BYTES)/1024/1024 MB from dba_segments group by SEGMENT_NAME;
+
+SEGMENT_NAME							     MB
+------------------------------------------------------------ ----------
+I_OBJ#								  .3125
+UNDO$								  .0625
+C_OBJ#								     15
+CON$								    .25
+I_CCOL1 							    .25
+I_CDEF1 							   .125
+I_OBJ3								  .1875
+I_PARTOBJ$							  .0625
+I_ACCESS1							      4
+I_USERAUTH1							  .0625
+SEQ$								  .0625
+I_TYPED_VIEW1							  .0625
+I_SEQ1								  .0625
+I_IDNSEQ1							  .0625
+I_COLTYPE2							   .125
+I_OPQTYPE1							  .0625
+SYS_IL0000000128C00004$$					  .0625
+SYS_IL0000000136C00005$$					  .0625
+SYS_LOB0000000152C00003$$					  .0625
+SQLERROR$							  .0625
+CONTAINER$							  .0625
+I_CONTAINER1							  .0625
+CONDATA$							  .0625
+PDB_ALERT$							  .0625
+UNDOHIST$							  .0625
+I_PDBSYNC4							  .0625
+IMSVC$								  .0625
+IMSVCTS$							  .0625
+I_IMSVCTS1							  .0625
+IMORDERBY$							  .0625
+FED$VERSIONS							  .0625
+FED$DEPENDENCY							  .0625
+I_SENSITIVE_FIXED$						  .0625
+SYS_LOB0000000276C00003$$					  .0625
+TRIGGERJAVAS$							  .0625
+TRIGGERJAVAC$							  .0625
+SYS_LOB0000000306C00003$$					  .0625
+SYS_LOB0000000306C00002$$					  .0625
+SQLTXL_ERR$							  .0625
+SYS_LOB0000000325C00017$$					  .0625
+SYS_LOB0000000332C00005$$					   .125
+SYS_LOB0000000340C00005$$					   .125
+SQLOBJ$_PKEY							  .0625
+I_SQLOBJ$NAME_TYPE						  .0625
+I_PROCEDUREC$							  .0625
+I_WARNING_SETTINGS						  .1875
+I_PLSCOPE_FLAGS_ACTION$ 					    .25
+MAP_SUBELEMENT$ 						  .0625
+I_PROFILE							  .0625
+I_JOB_NEXT							  .0625
+I_DIR$MIGRATE_STATUS						  .0625
+I_DIR$SERVICE_END_TIME						  .0625
+I_DIR$SERVICE_ALERT_SEQ_ID					  .0625
+I_DIR$ESCALATE_UI						  .0625
+DIR$RESONATE_OPERATIONS 					  .0625
+_default_auditing_options_					  .0625
+RLS_SC$ 							  .0625
+RADM$								  .0625
+SYS_IL0000000575C00003$$					  .0625
+SYS_LOB0000000575C00002$$					   .125
+FGACOL$ 							  .0625
+ENC_IDX 							  .0625
+I_XS$VERIFIERS1 						  .0625
+I_ACLMV$_1							  .0625
+DAM_PARAM_TAB$							  .0625
+I_DAM_LAST_ARCH_TS$						  .0625
+I_CACHE_STATS_1 						  .0625
+ASSOCIATION$							  .0625
+USTATS1 							  .0625
+OL$								  .0625
+I_WRI$_OPTSTAT_TAB_OBJ#_ST					  .3125
+I_WRI$_OPTSTAT_OPR_STIME					  .0625
+I_WRI$_OPTSTAT_OPR_TASKS_STIME					  .3125
+OPT_DIRECTIVE_OWN$						  .0625
+EXP_OBJ$							  .0625
+I_EXP_OBJ$							  .0625
+ID_GENS$							  .0625
+I_TYPE4 							  .0625
+I_TYPEHIERARCHY1						  .0625
+I_PARAMETER2							  .8125
+RESULTIND							    .25
+KOTTB$								      2
+SYS_LOB0000000772C00002$$					  .0625
+SYS_LOB0000000780C00002$$					  .0625
+OPANCILLARY$							  .0625
+OPARG$								  .0625
+INDOP$								  .0625
+INDARRAYTYPE$							  .0625
+I_JAVAOBJ1							   .625
+SYS_IL0000000819C00028$$					  .0625
+I_INDPART_BOPART$						  .0625
+I_INDPART_OBJ$							  .0625
+I_SUBPARTCOL$							  .0625
+TABSUBPART$							  .0625
+I_INDCOMPART$							  .0625
+I_LOBCOMPPART$_PARTOBJ$ 					  .0625
+SYS_IL0000000853C00008$$					  .0625
+INDPART_PARAM$							  .0625
+I_INDPART_PARAM 						  .0625
+I_MLOG_REFCOL1							  .0625
+SNAP_REFOP$							  .0625
+I_REG_SNAP1							  .0625
+I_REG_SNAP2							  .0625
+STREAMS$_CAPTURE_PROCESS					  .0625
+I_STREAMS_APPLY_PROCESS3					  .0625
+STREAMS$_PROP_P_I1						  .0625
+STREAMS$_DEF_PROC						  .0625
+SYS_LOB0000000943C00013$$					  .0625
+I_APPLY_CHANGE_HANDLERS 					  .0625
+APPLY$_ERROR_HANDLER_UNQ					  .0625
+APPLY$_TABLE_STATS_I						  .0625
+APPLY$_READER_STATS						  .0625
+I_FGR$_FILE_GROUP_VERSIONS1					  .0625
+RULESET$							  .0625
+RECO_SCRIPT$_UNQ						  .0625
+SYS_LOB0000001051C00007$$					   .125
+CMP_UNIQ_IDX1							  .0625
+STREAMS$_DATABASE_IND						  .0625
+XSTREAM$_DML_CONFLICT_HANDLER					  .0625
+I_XSTREAM_DML_CONF_HANDLER2					  .0625
+XSTREAM$_REPERROR_HANDLER					  .0625
+XSTREAM$_DDL_CONFLICT_HANDLER					  .0625
+SYS_LOB0000001120C00013$$					  .0625
+SYS_IL0000001120C00005$$					  .0625
+SYS_IL0000001120C00004$$					  .0625
+I_REPL_DBNAME_MAPPING_1 					  .0625
+AW$								  .0625
+SYS_IL0000001165C00007$$					  .0625
+SYS_IL0000001173C00007$$					  .0625
+AW_PRG$ 							  .0625
+I_OLAP_MAPPINGS$						  .0625
+I_OLAP_CUBE_BUILD_PROCESSES$					  .0625
+OLAP_AW_VIEW_COLUMNS$						  .0625
+I_OLAP_AW_VIEW_COLUMNS$ 					  .0625
+I_OLAP_CUBE_DIMENSIONS$ 					  .0625
+I_OLAP_DIM_LEVELS$						  .0625
+I_OLAP_ATTRIBUTE_VISIBILITY$					  .0625
+OLAP_TAB_HIER$							  .0625
+SYS_IL0000001243C00006$$					  .0625
+I2_OLAP_METADATA_PROPERTIES					  .0625
+I_SUMDETAIL$_2							  .0625
+I_SUMINLINE$_1							  .0625
+I_SUMJOIN$_1							  .0625
+SUMQB$								  .0625
+I_HIERLEVEL$_1							  .0625
+DIMLEVELKEY$							  .0625
+SYS_IL0000001302C00010$$					  .0625
+SYS_C001530							  .0625
+SYS_C001536							  .0625
+REDEF_OBJECT$							  .0625
+EXPDEPOBJ$							  .0625
+I_DEPENDOBJ							  .0625
+I_METAXSLPARAM$ 						  .1875
+I_METAXSLPARAMDESC$						  .0625
+METASCRIPTFILTER$						   .875
+I_METASCRIPTFILTER2$						  .5625
+I_METANAMETRANS1$						   .375
+SYS_IL0000001379C00007$$					  .0625
+SYS_LOB0000001379C00007$$					  .0625
+I_EXTERNAL_TAB1$						  .0625
+MODELTAB$							  .0625
+MODELPARTCOL$IDX						  .0625
+LOGMNR_LOG$_RECID						  .0625
+LOGMNR_AGE_SPILL$_PK						  .0625
+LOGMNR_RESTART_CKPT_TXINFO$					  .0625
+LOGMNR_PARAMETER_INDX						  .0625
+LOGMNR_PROFILE_TABLE$_PK					  .0625
+LOGMNRG_TAB$							  .0625
+LOGMNRG_TABCOMPART$						  .0625
+LOGMNRG_CDEF$							  .0625
+LOGMNRG_PARTOBJ$						  .0625
+SYS_C001806							  .0625
+SYS_FBA_CONTEXT 						  .0625
+SYS_FBA_APP							  .0625
+REDO_LOG							  .0625
+ROLLING$EVENTS							  .0625
+CLI_PART$PK							  .0625
+REGISTRY_SCHEMA_PK						  .0625
+SYS_IL0000001573C00006$$					  .0625
+SYS_LOB0000001573C00005$$					  .0625
+REGISTRY$HISTORY						  .0625
+NEW_LOST_WRITE_DATAFILES$					  .0625
+I_NEW_LOST_WRITE_EXTENTS$					  .0625
+SYS_IL0000001599C00005$$					  .0625
+SYS_LOB0000001599C00003$$					  .0625
+I_HCS_DIM_DTM_ATTR$_1						  .0625
+I_HCS_DIM_DTM_ATTR$_2						  .0625
+HCS_AV_MEAS$							  .0625
+HCS_LVLGRP_LVLS$						  .0625
+HCS_AV_CLSFCTN$ 						  .0625
+I_HCS_HIER_JOIN_PATH_1						  .0625
+MVIEW$_ADV_SQLDEPEND_IDX_01					  .0625
+MVIEW$_ADV_TEMP_IDX_01						  .0625
+MVIEW$_ADV_FILTER						  .0625
+MVIEW$_ADV_AJG_PK						  .0625
+MVIEW$_ADV_CLIQUE_PK						  .0625
+ILM$								  .0625
+
+SEGMENT_NAME							     MB
+------------------------------------------------------------ ----------
+SYS_LOB0000006986C00024$$					   .125
+ILM_DEPENDANT_OBJ$						  .0625
+I_ILM$								  .0625
+WRI$_SEGADV_ATTRIB						  .0625
+WRI$_SEGADV_CNTRLTAB						  .0625
+WRI$_SEGADV_CNTRLTAB_PK 					  .0625
+SYS_IL0000007422C00004$$					  .0625
+SYS_IL0000007451C00009$$					  .5625
+WRP$_REPORTS_DETAILS_IDX02					  .5625
+TSDP_PROTECTION$						  .0625
+TSDP_PROTECTION$PK						  .0625
+TXN_BACKOUT_STATE_IDX2$ 					  .0625
+UTL_RECOMP_ERRORS						  .0625
+SYS_C002243							  .0625
+RULE$								   .125
+SYS_LOB0000008147C00013$$					  .0625
+SYS_IL0000008178C00005$$					  .0625
+I2_CHNF$_CLAUSES						  .0625
+I2_CHNF$_CLAUSE_DEPENDENTS					  .0625
+SYS_IL0000008192C00007$$					  .0625
+SYS_LOB0000008192C00004$$					  .0625
+I2_CHNF$_QUERY_OBJECT						  .0625
+SYS_IL0000008204C00003$$					  .0625
+I2_CHNF$_QUERY_DEPS						  .0625
+SYS_IL0000008416C00011$$					  .0625
+AQ$_QUEUES							  .0625
+I1_QUEUES							  .0625
+AQ$_QUEUE_TABLE_AFFINITIES					  .0625
+AQ$_QTABLE_AFFINITIES_PK					  .0625
+AQ$_QUEUE_SHARD_PK						  .0625
+AQ$_E_QUEUE_PARTITION_MAP					  .0625
+WRI$_ADV_DEF_ACTION_PK						  .0625
+SYS_IL0000008706C00008$$					  .0625
+WRI$_ADV_OBJECTS_IDX_01 					   .125
+WRI$_ADV_RECS_IDX_02						  .0625
+WRI$_ADV_DIRECTIVE_DEFS 					  .0625
+WRI$_ADV_DIRM_IDX_01						  .0625
+WRI$_ADV_DIRINST_IDX_01 					  .0625
+WRI$_ADV_DIRINST_IDX_02 					  .0625
+SYS_C002514							  .0625
+WRI$_ADV_AI_COL_USAGE_01					  .0625
+WRI$_ADV_AI_COL_USAGE_02					  .0625
+SCHEDULER$_LOBJ_UK						  .0625
+SCHEDULER$_QINFO_PK						  .0625
+SCHEDULER$_SRCQ_MAP						  .0625
+SCHEDULER$_SRCQ_MAP_PK						  .0625
+SYS_LOB0000008842C00016$$					   .125
+I_SCHEDULER_JOB_OUT_ARGS					  .0625
+I_SCHEDULER_WINGRP_MEMBER2					  .0625
+SCHEDULER$_STEP_STATE_PK					  .0625
+SCHEDULER$_ATTRIB_PK						  .0625
+SCHEDULER$_RJOB_SRC_DB_INFO					  .0625
+I_SCHEDULER_NOTIFICATION5					  .0625
+SCHEDULER$_DESTINATIONS 					  .0625
+SCHEDULER$_DEST_PK						  .0625
+SCHEDULER$_RESOURCES						  .0625
+SCHEDULER$_CONSTRAINTS						  .0625
+SCHEDULER$_CONST_STATS_PK					  .0625
+I_SCHEDULER_CONST_STAT1 					  .0625
+KU$_USER_MAPPING_VIEW_TBL					  .0625
+CRC$_RESULT_CACHE_STATS 					  .0625
+SYS_IL0000009065C00008$$					  .0625
+SYS_IL0000009069C00005$$					  .0625
+KET$_CLIENT_TASKS						  .0625
+KET$_TSK_PK							  .0625
+WRI$_TRACING_IND1						  .0625
+SYS_IL0000009175C00004$$					  .0625
+WRI$_ADV_SQLT_RTN_PLAN_PK					  .0625
+WRI$_SQLSET_STATISTICS						  .0625
+WRI$_SQLSET_MASK_PK						  .0625
+SYS_LOB0000009213C00039$$					   .125
+SYS_LOB0000009217C00005$$					   .125
+WRI$_SQLMON_USAGE						  .0625
+WRI$_INDEX_USAGE_PK						  .0625
+UMF$_SERVICE							  .0625
+SYS_LOB0000009283C00009$$					  .0625
+SYS_LOB0000009287C00039$$					  .0625
+SQLOBJ$AUXDATA_DATAPUMP_TBL					  .0625
+WRR$_REPLAY_STATS_PK						  .0625
+WRR$_REPLAY_DATA_PK						  .0625
+WRR$_WORKLOAD_ATTRIBUTES_PK					  .0625
+WRR$_SCHEDULE_ORDERING						  .0625
+WRR$_REPLAY_LOGIN_QUEUE 					  .0625
+WRR$_CAPTURE_FILE_DETAILS					  .0625
+WRR$_CAPTURE_FILE_DETAILS_PK					  .0625
+WRR$_REPLAY_INSTANCES						  .0625
+WRR$_REPLAY_GROUP_ASSIGNS_PK					  .0625
+WRR$_REPLAY_TRACKED_COMMITS					  .0625
+WRR$_WORKLOAD_REPLAY_THREAD					  .0625
+WI$_EXECUTION_ORDER						  .0625
+WI$_EXECUTION_ORDER_PK						  .0625
+WRI$_ADV_SQLW_SUM						  .0625
+WRI$_ADV_SQLW_SUM_PK						  .0625
+WRI$_ADV_SQLW_CV_PK						  .0625
+WRI$_ADV_SQLA_STMTS_IDX_02					  .0625
+LOGMNR_DICTSTATE$						  .0625
+LOGMNRC_I2GTCS							  .0625
+LOGMNRC_I2INDGG 						  .0625
+LOGMNRC_INDCOL_GG						  .0625
+LOGMNRC_I1SHARD_TS						  .0625
+LOGMNRC_I1TS							  .0625
+LOGMNRC_GSBA							  .0625
+LOGMNR_TAB$							  .0625
+LOGMNR_I1TAB$							  .0625
+LOGMNR_COL$							  .0625
+LOGMNR_I1TABSUBPART$						  .0625
+LOGMNR_I1REFCON$						  .0625
+LOGMNR_I2IDNSEQ$						  .0625
+LOGMNRP_CTAS_PART_MAP_PK					  .0625
+LOGMNR_SHARD_TS 						  .0625
+LOGMNR_I1SHARD_TS						  .0625
+PK_DBMS_PARALLEL_EXECUTE_1					  .0625
+DBMS_PARALLEL_EXECUTE_CHUNKS$					  .0625
+I_DBMS_PARALLEL_EXECUTE_CHUNK1					  .0625
+DBFS$_STATS							  .0625
+SYS_FK0000009999N00008$ 					  .0625
+SYS_C003207							  .0625
+DBFS_SFS$_FS							  .0625
+SYS_C003251							  .0625
+USR_PROPERTIES_TAB						  .0625
+SYS_LOB0000010021C00007$$					  .0625
+I1_DBFS_HS$_SFLOCATORTABLE					  .0625
+XS$PROXY_ROLE_UK						  .0625
+XS$ACL								  .0625
+XS$ACL_PARAM_I3 						  .0625
+XS$ATTR_SEC							  .0625
+XS$ROLESET_PK							  .0625
+XS$ROLESET_ROLES_UK						  .0625
+RXS$SESSION_ROLES						  .0625
+NACL$_NAME_MAP_PK						  .0625
+CAPTURED_PRIV$							  .0625
+SYS_LOB0000010345C00018$$					   .125
+SYS_LOB0000010348C00003$$					   .125
+WRI$_STS_MASKING_STEP_PROGRESS					  .0625
+OPATCH_INST_JOB 						  .0625
+OPATCH_INST_PATCH						  .0625
+OPATCH_SQL_PATCHES						  .0625
+MVREF$_STMT_STATS						  .0625
+LINK_LOGONS$_SRCID_IDX						  .0625
+SYSDBIMFS_IDX$							  .0625
+SYSDBIMFS_SEGID_FK$						  .0625
+WRH$_FILESTATXS 						   .125
+WRH$_COMP_IOSTAT						  .0625
+WRH$_SQLSTAT							    .25
+WRH$_SQLTEXT							  .5625
+SYS_LOB0000011139C00004$$					  3.125
+WRI$_SQLTEXT_REFCOUNT						  .0625
+WRH$_LATCH_MISSES_SUMMARY_BL					  .0625
+WRH$_RESOURCE_LIMIT_PK						   .125
+WRH$_STREAMS_POOL_ADVICE_PK					  .0625
+WRH$_IM_SEG_STAT_BL_PK						  .0625
+WRH$_OSSTAT_BL_PK						  .0625
+WRH$_MVPARAMETER_BL_PK						  .0625
+WRH$_SEG_STAT_OBJ_PK						   .125
+WRH$_SEG_STAT_OBJ_INDEX 					   .125
+WRH$_SYSMETRIC_HISTORY_BL_IDX					  .0625
+WRH$_CON_SYSMET_SUMMARY_INDEX					  .1875
+WRH$_DLM_MISC_BL_PK						  .0625
+WRH$_INST_CACHE_TRANSFER					   .125
+WRH$_ACTIVE_SESSION_HISTORY					  .1875
+WRH$_ACTIVE_SESSION_HISTORY_BL					  .0625
+WRH$_MTTR_TARGET_ADVICE 					  .0625
+WRH$_TS_SPACE_USAGE_IND 					  .0625
+WRH$_SERVICE_NAME						  .0625
+WRH$_SERVICE_NAME_PK						  .0625
+WRH$_SERVICE_STAT						   .125
+WRH$_SERVICE_STAT_BL_PK 					  .0625
+WRH$_SERVICE_WAIT_CLASS 					   .125
+WRH$_STREAMS_APPLY_SUM_PK					  .0625
+WRH$_PERSISTENT_QUEUES						  .0625
+WRH$_REPLICATION_TBL_STATS_PK					  .0625
+WRH$_CELL_CONFIG_DETAIL_PK					  .0625
+WRH$_ASM_DISKGROUP_PK						  .0625
+WRH$_CELL_GLOBAL_SUMMARY_BL					  .0625
+WRH$_CELL_METRIC_DESC_PK					  .0625
+WRI$_SCH_VOTES							  .0625
+WRM$_SCH_VOTES_PK						  .0625
+WRH$_IC_DEVICE_STATS						  .0625
+WRH$_DISPATCHER 						  .0625
+WRM$_SNAPSHOT							  .0625
+WRM$_TABLE_DEFAULT_SETTINGS_PK					  .0625
+WRH$_AWR_TEST_1 						   .125
+WRWS$_WAREHOUSE_REG_U						  .0625
+WRW$_SERVER_MAILPKG						  .0625
+SCHEDULER_PROGRAM_ARGS_TBL					  .0625
+SYS_IL0000013498C00007$$					  .0625
+SQL_TK_ROW_CHK$ 						  .0625
+SQL_TK_REF_CHK$ 						  .0625
+SYS_LOB0000014826C00008$$					   .125
+LOGSTDBY$PARAMETERS						  .0625
+LOGSTDBY$PLSQL							  .0625
+LOGSTDBY$EDS_TABLES						  .0625
+I_GG_PROCEDURE_ANNOTATION					  .0625
+SYS_IL0000017467C00008$$					  .0625
+I_STREAMS_APPLY_SPILL_MSGS_PT1					  .0625
+STREAMS$_APPLY_ERROR_TXN_UNQ					  .0625
+NACL$_WALLET_EXP_TBL						  .0625
+
+SEGMENT_NAME							     MB
+------------------------------------------------------------ ----------
+SCHEDULER$_REMDB_JOBQTAB					  .0625
+SYS_LOB0000019730C00061$$					  .0625
+AQ$_SCHEDULER$_REMDB_JOBQTAB_L					  .0625
+SYS_C004983							  .0625
+SYS_IOT_TOP_19778						  .0625
+AQ$_SCHEDULER_FILEWATCHER_QT_L					  .0625
+ALERT_QT							  .0625
+SYS_IOT_TOP_19831						  .0625
+SYS_IOT_OVER_19836						  .0625
+RPP$X$KCCLH							  .0625
+RPP$X$KCCDC							  .0625
+RPP$X$KCCCC							  .0625
+ROPP$X$KCCSDM							  .0625
+ROPP$X$KCCDI							  .0625
+ROPP$X$KCCTIR							  .0625
+ROPP$X$KCCCC							  .0625
+ROPP$X$KCCRSR							  .0625
+HS$_CLASS_CAPS_UK1						  .0625
+HS$_INST_CAPS_PK						  .0625
+HS$_CLASS_DD_UK1						  .0625
+HS$_CLASS_INIT							  .0625
+SYS_FK0000020313N00017$ 					  .0625
+HS$_PARALLEL_SAMPLE_DATA					  .0625
+SYS_C005181							  .0625
+SYS_IOT_TOP_20354						  .0625
+AQ_EVENT_TABLE							  .0625
+SYS_IL0000020367C00045$$					  .0625
+AQ$_AQ_EVENT_TABLE_T						  .0625
+SYS_C005198							  .0625
+SYS_IOT_TOP_20393						  .0625
+SYS_LOB0000020412C00045$$					  .0625
+WRHS$_EVENT_NAME						  .0625
+WRHS$_SQL_BIND_METADATA 					  .0625
+WRHS$_IOSTAT_FILETYPE_NAME					  .0625
+WRHS$_PLAN_OPERATION_NAME					  .0625
+WRHS$_CELL_METRIC_DESC						  .0625
+WRH$_SYSMETRIC_HISTORY_INDEX					    .25
+WRH$_SERVICE_WAIT_CLASS_PK					   .125
+WRH$_CELL_GLOB_SUMM_PK						   .125
+WRH$_CELL_DISK_SUMM_PK						   .125
+WRH$_CON_SYS_TIME_MODEL_PK					   .125
+WRH$_CON_SYSTEM_EVENT_PK					  .1875
+WRH$_AWR_TEST_1_PK						   .125
+WRH$_SESS_NETWORK_PK						   .125
+SYS_FK0000073302N00099$ 					  .0625
+SYS_FK0000073302N00183$ 					  .0625
+SYS_C005363							  .0625
+SYS_IOT_TOP_20721						  .0625
+AQ$_SYS$SERVICE_METRICS_TAB_L					  .0625
+BSLN_BASELINES_PK2						  .0625
+SYS_C005458							  .0625
+SYS_IOT_TOP_20895						  .0625
+DDLID$								  .0625
+SYS_IOT_TOP_21034						  .0625
+SYS_IOT_OVER_21037						  .0625
+XDB$IMPORT_TT_INFO						  .0625
+XDB$D_LINK							  .0625
+SYS_C005630							  .0625
+SYS_LOB0000021188C00138$$					   .125
+SYS_IL0000021188C00130$$					  .0625
+SYS_LOB0000021188C00128$$					   .125
+SYS_LOB0000021188C00114$$					   .125
+SYS_IL0000021188C00097$$					  .0625
+SYS_LOB0000021188C00096$$					   .125
+SYS_IL0000021188C00090$$					  .0625
+SYS_LOB0000021188C00090$$					   .125
+SYS_IL0000021188C00075$$					  .0625
+SYS_LOB0000021188C00072$$					   .125
+SYS_IL0000021188C00059$$					  .0625
+SYS_LOB0000021188C00050$$					   .125
+SYS_IL0000021188C00035$$					  .0625
+SYS_LOB0000021188C00033$$					   .125
+SYS_LOB0000021188C00032$$					   .125
+SYS_LOB0000021188C00027$$					   .125
+SYS_LOB0000021188C00026$$					   .125
+SYS_LOB0000021188C00025$$					   .125
+SYS_LOB0000021188C00017$$					   .125
+XDB$COMPLEX_TYPE						  .5625
+SYS_IL0000021330C00192$$					  .0625
+SYS_IL0000021330C00191$$					  .0625
+SYS_IL0000021330C00186$$					  .0625
+SYS_LOB0000021330C00179$$					   .125
+SYS_IL0000021330C00173$$					  .0625
+SYS_LOB0000021330C00172$$					   .125
+SYS_LOB0000021330C00166$$					   .125
+SYS_IL0000021330C00165$$					  .0625
+SYS_LOB0000021330C00163$$					   .125
+SYS_LOB0000021330C00154$$					   .125
+SYS_LOB0000021330C00147$$					   .125
+SYS_IL0000021330C00121$$					  .0625
+SYS_IL0000021330C00113$$					  .0625
+SYS_LOB0000021330C00107$$					   .125
+SYS_LOB0000021330C00098$$					   .125
+SYS_IL0000021330C00079$$					  .0625
+SYS_LOB0000021330C00079$$					   .125
+SYS_LOB0000021330C00066$$					   .125
+SYS_LOB0000021330C00061$$					   .125
+SYS_LOB0000021330C00056$$					   .125
+SYS_IL0000021330C00049$$					  .0625
+SYS_IL0000021330C00039$$					  .0625
+SYS_LOB0000021330C00036$$					   .125
+SYS_IL0000021330C00027$$					  .0625
+SYS_LOB0000021330C00022$$					   .125
+SYS_IL0000021330C00017$$					  .0625
+SYS_LOB0000021330C00015$$					   .125
+SYS_IL0000021330C00007$$					  .0625
+SYS_IL0000021524C00018$$					  .0625
+SYS_LOB0000021524C00016$$					   .125
+SYS_LOB0000021524C00015$$					   .125
+SYS_LOB0000021524C00013$$					   .125
+SYS_IL0000021524C00005$$					  .0625
+SYS_IL0000021548C00018$$					  .0625
+SYS_LOB0000021548C00004$$					   .125
+SYS_LOB0000021572C00015$$					   .125
+SYS_LOB0000021572C00013$$					   .125
+SYS_IL0000021572C00005$$					  .0625
+SYS_LOB0000021572C00004$$					   .125
+SYS_LOB0000021596C00068$$					   .125
+SYS_LOB0000021596C00033$$					   .125
+SYS_LOB0000021618C00033$$					   .125
+SYS_IL0000021618C00032$$					  .0625
+SYS_LOB0000021632C00005$$					   .125
+SYS_C005638							  .0625
+SYS_IL0000021646C00033$$					  .0625
+SYS_LOB0000021646C00031$$					   .125
+SYS_LOB0000021646C00007$$					   .125
+SYS_LOB0000021646C00005$$					   .125
+SYS_LOB0000021646C00004$$					   .125
+SYS_IL0000021660C00004$$					  .0625
+SYS_LOB0000021674C00015$$					   .125
+SYS_IL0000021674C00005$$					  .0625
+SYS_LOB0000021688C00013$$					   .125
+SYS_LOB0000021708C00004$$					   .125
+SYS_IL0000021722C00023$$					  .0625
+SYS_LOB0000021722C00023$$					 1.1875
+SYS_IL0000021722C00022$$					  .0625
+SYS_IL0000021722C00017$$					  .0625
+SYS_LOB0000021722C00005$$					   .125
+XDB$ELEMENT_PROPNUMBER						   .125
+XDB$ELEMENT_TR							   .125
+XDB$COMPLEX_TYPE_CK						  .0625
+SYS_IL0000021776C00005$$					  .0625
+SYS_IL0000021776C00004$$					  .0625
+SYS_LOB0000021776C00004$$					   .125
+XDB$RESOURCE_ACLOID_IDX 					  .0625
+SYS_C005645							  .0625
+SYS_LOB0000022061C00003$$					   .125
+XDB$DXPTAB							  .0625
+SYS_LOB0000022132C00006$$					   .125
+XDB$STATS							  .0625
+EXTRADATA12_L							   .125
+XDB$CONFIG							  .0625
+SYS_IL0000022161C00003$$					  .0625
+SYS_LOB0000022161C00003$$					   .125
+JSON$USERS_PK							  .0625
+JSON$USER_ROLES 						  .0625
+JSON$USER_ROLES_PK						  .0625
+JSON$USER_ROLES_N1						  .0625
+SYS_IL0000010514C00008$$					  .0625
+SYS_IL0000022506C00014$$					  .0625
+SYS_LOB0000022506C00014$$					  .0625
+SYS_IL0000022516C00008$$					  .0625
+WM$ENV_VARS_PK							  .0625
+WM$MODIFIED_TABLES_PK						  .0625
+WM$NESTED_COLUMNS_PK						  .0625
+WM$RESOLVE_WORKSPACES_TABLE$					  .0625
+WM$UDTRIG_DISPATCH_PROCS_PK					  .0625
+SYS_IL0000022878C00007$$					  .0625
+WM$UDTRIG_INFO_VTID						  .0625
+WM$WORKSPACE_SAVEPOINTS_TABLE$					  .0625
+WM$RIC_LOCKING_IND						  .0625
+HELP_TOPIC_SEQ							  .0625
+JAVA$JVM$STEPS$DONE						  .0625
+JAVA$RMJVM$AUXI3						     .5
+SYS_LOB0000023239C00003$$					  .0625
+JAVA$MC$UNIQUE							    .25
+JAVA$MC$DEPS$OBJN_IDX						  .0625
+JAVA$COMPILER$OPTIONS						  .0625
+JAVANEGDEPS$							  .0625
+JAVA$POLICY$SHARED$TABLE					  .0625
+JAVA$PREFS$							  .0625
+DR$OBJECT							  .0625
+DRX$OAL_ID							  .0625
+DR$PREFERENCE_VALUE						  .0625
+DR$INDEX_VALUE							  .0625
+DR$INDEX_SET							  .0625
+ORDDCM_DOC_TYPES						  .0625
+ORDDCM_VR_DT_MAP						  .0625
+SYS_C006181							  .0625
+SDO_ELLIPSOIDS							  .0625
+SDO_COORD_OP_METHODS						  .0625
+SDO_COORD_OPS_COORD_OP_TYPE					    .25
+SYS_LOB0000064076C00008$$					   .125
+COORD_AXIS_PRIM 						  .0625
+COORD_OP_METHOD_PRIM						  .0625
+COORD_OP_NAME_UNIQUE						   .375
+SYS_IL0000066401C00004$$					  .0625
+
+SEGMENT_NAME							     MB
+------------------------------------------------------------ ----------
+SYS_LOB0000066401C00004$$					 3.1875
+SYS_IL0000066416C00004$$					  .0625
+AWXML_I$							  .0625
+AWREPORT_I$							  .0625
+WRH$_FILESTATXS_PK						   .125
+WRH$_LATCH_PK							     .5
+SYS_C007006							  .0625
+SYS_LOB0000070589C00003$$					 1.1875
+FACTOR_T$							  .0625
+RULE_SET_RULE$							  .0625
+CODE$_PK1							  .0625
+FACTOR_LINK$_UK1						  .0625
+REALM_OBJECT$_PK1						  .0625
+CODE$_UK1							  .0625
+FACTOR$_FK_IDX							  .0625
+REALM_AUTH$_FK_IDX						  .0625
+POLICY$_PK1							  .0625
+POLICY$_UK2							  .0625
+EXT_TAB_DATUMS							   .125
+EXT_TAB_MEASURE 						  .0625
+EXT_TAB_OP_METHODS						  .0625
+SYS_LOB0000072921C00006$$					 72.125
+SYS_IL0000072926C00002$$					  .0625
+LOCATIONS							  .0625
+DEPT_ID_PK							  .0625
+EMPLOYEES							   .125
+JOB_HISTORY							  .0625
+JHIST_JOB_IX							  .0625
+LOC_STATE_PROVINCE_IX						  .0625
+LOC_COUNTRY_IX							  .0625
+SYS_IL0000073302C00134$$					  .0625
+SYS_LOB0000073302C00134$$					   .125
+SYS_C007583							  .0625
+AQ$_KUPC$DATAPUMP_QUETAB_1_L					  .0625
+SYS_IL0000073357C00185$$					  .0625
+SYS_IL0000073357C00038$$					  .0625
+SYS_C007598							  .0625
+SYS_IL0000073386C00006$$					  .0625
+SYS_LOB0000073386C00006$$					   .125
+PK_EMP								  .0625
+SYS_C007845							  .0625
+DEMO								  .0625
+SYSTEM								  .4375
+_SYSSMU3_2421748942$						  6.125
+_SYSSMU9_1692468413$						  4.125
+I_PROXY_ROLE_DATA$_1						  .0625
+I_ICOL1 							   .125
+I_TS1								  .0625
+OBJERROR$							  .0625
+OBJECT_USAGE							  .0625
+I_DEPENDENCY2							      6
+SYN$								  .5625
+TYPED_VIEW$							  .0625
+I_LOB1								  .0625
+I_COLTYPE1							   .125
+I_SYSAUTH1							  .0625
+PDBSTATE$							  .0625
+CDBVW_STATS$							  .0625
+I_PDBSYNC2							  .0625
+SYS_LOB0000000219C00003$$					  .0625
+I_FED_PATCHES$							  .0625
+FED$BINDS							  .0625
+SYS_IL0000000233C00007$$					  .0625
+SENSITIVE_FIXED$						  .0625
+SESS_CNT_HISTORY$						  .0625
+RECYCLEBIN$							  .0625
+RECYCLEBIN$_OBJ 						  .0625
+RECYCLEBIN$_OWNER						  .0625
+CONTEXT$							  .0625
+TRIGGERDEP$							  .0625
+SQLTXL$ 							  .0625
+SQLTXL_SQL$							  .0625
+INDEX_ORPHANED_ENTRY$						  .0625
+I_COMPRESSION1							  .0625
+SYS_IL0000000336C00005$$					  .0625
+I_SQL$TEXT_PKEY 						  .0625
+SYS_IL0000000347C00009$$					  .0625
+SYS_IL0000000358C00040$$					  .0625
+I_SQLOBJ$AUXDATA_TASK						  .0625
+SOURCE$ 							     38
+SETTINGS$							      3
+I_SETTINGS1							      2
+NATIVE_COMP_SHARED_OBJECTS					      1
+PROCEDUREPLSQL$ 						   .375
+DIANA_VERSION$							  .0625
+I_PLSCOPE_SIG_IDENTIFIER$					  .1875
+SYS_LOB0000000412C00003$$					   .125
+PENDING_SESSIONS$						  .0625
+SMON_SCN_TO_TIME_AUX						    .75
+SMON_SCN_TIME_TIM_IDX						  .0625
+MAP_COMPLIST$							  .0625
+RESOURCE_COST$							  .0625
+RESOURCE_PLAN$							  .0625
+CDB_SERVICE$							  .0625
+I_DIR$SERVICE_UI						  .0625
+I_DIR$QUIESCE_ALERT_SEQ_ID					  .0625
+I_DIR$RESONATE_STATUS						  .0625
+I_DIR$ALERT_HISTORY_REASON_ID					  .0625
+SYSTEM_PRIVILEGE_MAP						  .0625
+I_RLS								  .0625
+I_RLS_CTX							  .0625
+I_RLS_CSA							  .0625
+SYS_C00719							  .0625
+I_RADM_PE1							  .0625
+I_FGAP								  .0625
+I_FGACOL							  .0625
+SYS_IL0000000602C00013$$					  .0625
+XSDB$SCHEMA_ACL 						  .0625
+DEFAULT_PWD$							  .1875
+I_DEFAULT_PWD							    .25
+DAM_LAST_ARCH_TS$						  .0625
+TSDP_SENSITIVE_DATA$						  .0625
+AUX_STATS$							  .0625
+STATS_TARGET$							  .1875
+I_STATS_TARGET1 						  .1875
+SYS_IL0000000665C00021$$					  .0625
+I_COL_USAGE$							   .125
+I_MON_MODS$_OBJ 						  .0625
+I_WRI$_OPTSTAT_TAB_ST						  .1875
+WRI$_OPTSTAT_OPR						  .1875
+I_WRI$_OPTSTAT_OPR_TASKS_OPOBJ					   .375
+OPTSTAT_HIST_CONTROL$						  .0625
+OPT_FINDING$							  .0625
+OPT_DIRECTIVE$							  .0625
+I_OPT_CALIBRATION_STATS$					  .0625
+PK_OPT_SQLSTAT							  .0625
+I_OPT_SQLSTAT_LGT						  .0625
+TYPEHIERARCHY$							  .0625
+I_COLLECTION2							   .125
+I_ATTRIBUTE1							      2
+SYS_IL0000000768C00002$$					  .0625
+SYS_IL0000000784C00002$$					  .0625
+SYS_IL0000000788C00002$$					  .0625
+OPERATOR$							  .0625
+SECOBJ$ 							  .0625
+TABPART$							  .0625
+SYS_LOB0000000814C00026$$					  .0625
+I_TABPART_BOPART$						  .0625
+SYS_LOB0000000836C00034$$					  .0625
+I_TABCOMPART_BOPART$						  .0625
+LOBFRAG$							  .0625
+I_SUMDELTA$							  .0625
+SNAP_LOADERTIME$						  .0625
+I_SNAP_COLMAP1							  .0625
+I_STREAMS_CAPTURE_SERVER					  .0625
+SQL> select SEGMENT_NAME,sum(BYTES)/1024/1024 MB from dba_segments where tablespace_name='UNDOTBS1' group by SEGMENT_NAME;
+
+SEGMENT_NAME							     MB
+------------------------------------------------------------ ----------
+_SYSSMU3_2421748942$						  6.125
+_SYSSMU9_1692468413$						  4.125
+_SYSSMU4_625702278$						  4.125
+_SYSSMU6_813816332$						  6.125
+_SYSSMU1_1261223759$						  5.125
+_SYSSMU5_2101348960$						  6.125
+_SYSSMU2_27624015$						 8.1875
+_SYSSMU10_930580995$						  8.125
+_SYSSMU7_2329891355$						  5.125
+_SYSSMU8_399776867$						  4.125
+
+10 rows selected.
+
+
+
+
