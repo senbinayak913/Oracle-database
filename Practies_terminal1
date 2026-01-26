@@ -5534,6 +5534,201 @@ _SYSSMU8_399776867$						  4.125
 
 10 rows selected.
 
+[oracle@localhost ~]$ . oraenv
+ORACLE_SID = [oracle] ? prod
+The Oracle base has been set to /u01/app/oracle
+[oracle@localhost ~]$ sqlplus Demo26/demo
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Mon Jan 26 16:11:20 2026
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> create table employees(
+  2  empId int primary,
+  3  empName varchar(30),
+  4  deptId int,
+  5  salary int);
+empId int primary,
+                 *
+ERROR at line 2:
+ORA-00905: missing keyword
+
+
+SQL> create table employees(
+  2  empId int primary key,
+  3  empName varchar(30),
+  4  deptId int,
+  5   salary int);
+
+Table created.
+
+SQL> insert into employees values(1,"Ron",2,3000);
+insert into employees values(1,"Ron",2,3000)
+                               *
+ERROR at line 1:
+ORA-00984: column not allowed here
+
+
+SQL> /
+insert into employees values(1,"Ron",2,3000)
+                               *
+ERROR at line 1:
+ORA-00984: column not allowed here
+
+
+SQL> insert into employees values(1,'Ron',2,3000);
+
+1 row created.
+
+SQL> insert into employees values(2,'Harry',1,4000);
+
+1 row created.
+
+SQL> insert into employees values(3,'Hermoiny',3,10000);
+
+1 row created.
+
+SQL> desc user_segments;
+ Name					   Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ SEGMENT_NAME					    VARCHAR2(128)
+ PARTITION_NAME 				    VARCHAR2(128)
+ SEGMENT_TYPE					    VARCHAR2(18)
+ SEGMENT_SUBTYPE				    VARCHAR2(10)
+ TABLESPACE_NAME				    VARCHAR2(30)
+ BYTES						    NUMBER
+ BLOCKS 					    NUMBER
+ EXTENTS					    NUMBER
+ INITIAL_EXTENT 				    NUMBER
+ NEXT_EXTENT					    NUMBER
+ MIN_EXTENTS					    NUMBER
+ MAX_EXTENTS					    NUMBER
+ MAX_SIZE					    NUMBER
+ RETENTION					    VARCHAR2(7)
+ MINRETENTION					    NUMBER
+ PCT_INCREASE					    NUMBER
+ FREELISTS					    NUMBER
+ FREELIST_GROUPS				    NUMBER
+ BUFFER_POOL					    VARCHAR2(7)
+ FLASH_CACHE					    VARCHAR2(7)
+ CELL_FLASH_CACHE				    VARCHAR2(7)
+ INMEMORY					    VARCHAR2(8)
+ INMEMORY_PRIORITY				    VARCHAR2(8)
+ INMEMORY_DISTRIBUTE				    VARCHAR2(15)
+ INMEMORY_DUPLICATE				    VARCHAR2(13)
+ INMEMORY_COMPRESSION				    VARCHAR2(17)
+ CELLMEMORY					    VARCHAR2(24)
+
+SQL> col  SEGMENT_NAME for a60
+SQL> col SEGMENT_TYPE for a60
+SQL> select SEGMENT_NAME,SEGMENT_TYPE,TABLESPACE_NAME from user_segments;
+
+SEGMENT_NAME
+------------------------------------------------------------
+SEGMENT_TYPE
+------------------------------------------------------------
+TABLESPACE_NAME
+------------------------------
+EMPLOYEES
+TABLE
+USERS
+
+SYS_C007845
+INDEX
+USERS
+
+SEGMENT_NAME
+------------------------------------------------------------
+SEGMENT_TYPE
+------------------------------------------------------------
+TABLESPACE_NAME
+------------------------------
+
+
+SQL> set lin 200 pages 200
+SQL> /
+
+SEGMENT_NAME						     SEGMENT_TYPE						  TABLESPACE_NAME
+------------------------------------------------------------ ------------------------------------------------------------ ------------------------------
+EMPLOYEES						     TABLE							  USERS
+SYS_C007845						     INDEX							  USERS
+
+SQL> desc user_extends;
+ERROR:
+ORA-04043: object user_extends does not exist
+
+
+SQL> desc user_extends;
+ERROR:
+ORA-04043: object user_extends does not exist
+
+
+SQL> desc user_extents;
+ Name														   Null?    Type
+ ----------------------------------------------------------------------------------------------------------------- -------- ----------------------------------------------------------------------------
+ SEGMENT_NAME														    VARCHAR2(128)
+ PARTITION_NAME 													    VARCHAR2(128)
+ SEGMENT_TYPE														    VARCHAR2(18)
+ TABLESPACE_NAME													    VARCHAR2(30)
+ EXTENT_ID														    NUMBER
+ BYTES															    NUMBER
+ BLOCKS 														    NUMBER
+
+SQL> col SEGMENT_NAME for a60
+SQL> select SEGMENT_NAME ,EXTENT_ID,BYTES/1024 as size_kb from user_extents;
+
+SEGMENT_NAME						      EXTENT_ID    SIZE_KB
+------------------------------------------------------------ ---------- ----------
+EMPLOYEES							      0 	64
+SYS_C007845							      0 	64
+
+SQL> INSERT INTO employees
+SELECT level, 'Employee ' || level
+FROM dual
+CONNECT BY level <= 100000;
+
+COMMIT;
+  2    3    4  INSERT INTO employees
+            *
+ERROR at line 1:
+ORA-00947: not enough values
+
+
+SQL> SQL> 
+Commit complete.
+
+SQL> SELECT COUNT(*) FROM user_extents WHERE segment_name='EMPLOYEES';
+
+  COUNT(*)
+----------
+	 1
+
+SQL> desc v$parameter
+ERROR:
+ORA-04043: object "SYS"."V_$PARAMETER" does not exist
+
+
+SQL> desc v$parameter;
+ERROR:
+ORA-04043: object "SYS"."V_$PARAMETER" does not exist
+
+
+SQL> desc v$parameter;
+ERROR:
+ORA-04043: object "SYS"."V_$PARAMETER" does not exist
+
+
+SQL> update employees set empName='Shon' where empId=1;
+
+1 row updated.
+
+SQL> 
 
 
 
