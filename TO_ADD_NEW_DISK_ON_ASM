@@ -1,0 +1,160 @@
+[root@localhost ~]# who am i
+root     pts/0        2026-02-19 21:37 (:0)
+[root@localhost ~]# lsblk
+NAME        MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sdb           8:16   0   30G  0 disk 
+├─sdb2        8:18   0   20G  0 part 
+└─sdb1        8:17   0   10G  0 part 
+sr0          11:0    1 50.7M  0 rom  /run/media/root/VBox_GAs_7.2.2
+sdc           8:32   0   20G  0 disk 
+sda           8:0    0   50G  0 disk 
+├─sda2        8:2    0   49G  0 part 
+│ ├─ol-swap 252:1    0  3.9G  0 lvm  [SWAP]
+│ └─ol-root 252:0    0 45.1G  0 lvm  /
+└─sda1        8:1    0    1G  0 part /boot
+[root@localhost ~]# oracleasm listdisks
+DATA1
+FRA1
+[root@localhost ~]# oracleasm createdisk DATA2 /dev/sdc
+Device "/dev/sdc" is not a partition
+[root@localhost ~]# fdisk /dev/sdc
+Welcome to fdisk (util-linux 2.23.2).
+
+Changes will remain in memory only, until you decide to write them.
+Be careful before using the write command.
+
+Device does not contain a recognized partition table
+Building a new DOS disklabel with disk identifier 0x7763b7f4.
+
+Command (m for help): n
+Partition type:
+   p   primary (0 primary, 0 extended, 4 free)
+   e   extended
+Select (default p): 
+Using default response p
+Partition number (1-4, default 1): 
+First sector (2048-41943039, default 2048): 
+Using default value 2048
+Last sector, +sectors or +size{K,M,G} (2048-41943039, default 41943039): 
+Using default value 41943039
+Partition 1 of type Linux and of size 20 GiB is set
+
+Command (m for help): w
+The partition table has been altered!
+
+Calling ioctl() to re-read partition table.
+Syncing disks.
+[root@localhost ~]# lsblk
+NAME        MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sdb           8:16   0   30G  0 disk 
+├─sdb2        8:18   0   20G  0 part 
+└─sdb1        8:17   0   10G  0 part 
+sr0          11:0    1 50.7M  0 rom  /run/media/root/VBox_GAs_7.2.2
+sdc           8:32   0   20G  0 disk 
+└─sdc1        8:33   0   20G  0 part 
+sda           8:0    0   50G  0 disk 
+├─sda2        8:2    0   49G  0 part 
+│ ├─ol-swap 252:1    0  3.9G  0 lvm  [SWAP]
+│ └─ol-root 252:0    0 45.1G  0 lvm  /
+└─sda1        8:1    0    1G  0 part /boot
+[root@localhost ~]# oracleasm createdisk DATA2 /dev/sdc1
+Writing disk header: done
+Instantiating disk: done
+[root@localhost ~]# oracleasm listdisks
+DATA1
+DATA2
+FRA1
+[root@localhost ~]# su -grid
+su: group rid does not exist
+[root@localhost ~]# su grid
+[grid@localhost root]$ $HOME
+bash: /home/grid: Is a directory
+[grid@localhost root]$ sqlplus / as sysasm
+bash: sqlplus: command not found...
+[grid@localhost root]$ su - grid
+Password: 
+Last login: Thu Feb 19 21:46:13 IST 2026 on pts/0
+[grid@localhost ~]$ echo $ORACLE_HOME
+/u01/app/grid/product/19c/grid_home
+[grid@localhost ~]$ echo $ORACLE_SID
++ASM
+[grid@localhost ~]$ sqlplus / as sysasm
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Thu Feb 19 21:48:24 2026
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> ALTER DISKGROUP DATA ADD DISK 'ORCL:DATA2';
+ALTER DISKGROUP DATA ADD DISK 'ORCL:DATA2'
+*
+ERROR at line 1:
+ORA-15032: not all alterations performed
+ORA-15031: disk specification 'ORCL:DATA2' matches no disks
+
+
+SQL> exit
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+[grid@localhost ~]$ su - root
+Password: 
+Last login: Thu Feb 19 21:37:28 IST 2026 on :0
+[root@localhost ~]# oracleasm listdisks
+DATA1
+DATA2
+FRA1
+[root@localhost ~]# oracleasm scandisks
+Reloading disk partitions: done
+Cleaning any stale ASM disks...
+Scanning system for ASM disks...
+[root@localhost ~]# oracleasm listdisks
+DATA1
+DATA2
+FRA1
+[root@localhost ~]# su - grid
+Last login: Thu Feb 19 21:47:59 IST 2026 on pts/0
+[grid@localhost ~]$ sqlplus / as sysasm
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Thu Feb 19 21:51:35 2026
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> SELECT path, name FROM v$asm_disk;
+
+PATH
+--------------------------------------------------------------------------------
+NAME
+------------------------------
+/dev/oracleasm/disks/DATA2
+
+
+/dev/oracleasm/disks/FRA1
+FRA_0000
+
+/dev/oracleasm/disks/DATA1
+DATA_0000
+
+
+SQL> ALTER DISKGROUP DATA ADD DISK '/dev/oracleasm/disks/DATA2';
+
+Diskgroup altered.
+
+SQL> SELECT name, total_mb, free_mb FROM v$asm_diskgroup;
+
+NAME				 TOTAL_MB    FREE_MB
+------------------------------ ---------- ----------
+DATA				    30716      23684
+FRA				    20476      20288
+
+SQL> 
