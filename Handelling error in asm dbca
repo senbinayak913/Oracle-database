@@ -71,3 +71,105 @@ SQL> SELECT name FROM v$asm_alias WHERE name LIKE '%PROD01%';
 no rows selected
 
 SQL> 
+
+
+SQL> SELECT name FROM v$asm_alias WHERE name LIKE '%PROD01%';
+
+no rows selected
+
+SQL> exit
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+[grid@localhost ~]$ asmcmd ls +DATA
+ASM/
+PROD/
+orapwasm
+[grid@localhost ~]$ su - grid
+Password: 
+Last login: Thu Feb 19 23:07:01 IST 2026 on pts/0
+[grid@localhost ~]$ sqlplus / as sysasm
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Thu Feb 19 23:15:58 2026
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> SELECT name FROM v$asm_alias WHERE name LIKE 'PROD01%';
+
+no rows selected
+
+SQL> SELECT group_number, name FROM v$asm_diskgroup;
+
+GROUP_NUMBER NAME
+------------ ------------------------------
+	   1 DATA
+	   2 FRA
+
+SQL> SELECT name, compatibility, database_compatibility 
+FROM v$asm_diskgroup;
+  2  
+NAME
+------------------------------
+COMPATIBILITY
+------------------------------------------------------------
+DATABASE_COMPATIBILITY
+------------------------------------------------------------
+DATA
+19.0.0.0.0
+10.1.0.0.0
+
+FRA
+19.0.0.0.0
+10.1.0.0.0
+
+NAME
+------------------------------
+COMPATIBILITY
+------------------------------------------------------------
+DATABASE_COMPATIBILITY
+------------------------------------------------------------
+
+
+SQL> ALTER DISKGROUP DATA SET ATTRIBUTE 'compatible.rdbms' = '19.0.0.0.0';
+ALTER DISKGROUP FRA  SET ATTRIBUTE 'compatible.rdbms' = '19.0.0.0.0';
+
+Diskgroup altered.
+
+SQL> 
+Diskgroup altered.
+
+SQL> SELECT name, compatibility, database_compatibility 
+FROM v$asm_diskgroup;
+  2  
+NAME
+------------------------------
+COMPATIBILITY
+------------------------------------------------------------
+DATABASE_COMPATIBILITY
+------------------------------------------------------------
+DATA
+19.0.0.0.0
+19.0.0.0.0
+
+FRA
+19.0.0.0.0
+19.0.0.0.0
+
+NAME
+------------------------------
+COMPATIBILITY
+------------------------------------------------------------
+DATABASE_COMPATIBILITY
+------------------------------------------------------------
+
+
+SQL> exit
+Disconnected from Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+[grid@localhost ~]$ 
+
