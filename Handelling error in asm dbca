@@ -1,0 +1,73 @@
+[oracle@localhost prod01]$ dbca -silent -deleteDatabase -sourceDB prod01 -sysDBAUserName sys -sysDBAPassword YourPassword
+[WARNING] [DBT-19202] The Database Configuration Assistant will delete the Oracle instances and datafiles for your database. All information in the database will be destroyed.
+Prepare for db operation
+32% complete
+Connecting to database
+35% complete
+39% complete
+42% complete
+45% complete
+48% complete
+52% complete
+ORA-01081: cannot start already-running ORACLE - shut it down first
+
+65% complete
+Updating network configuration files
+68% complete
+Deleting instance and datafiles
+84% complete
+100% complete
+Database deletion completed.
+Look at the log file "/u01/app/oracle/cfgtoollogs/dbca/prod01/prod01.log" for further details.
+[oracle@localhost prod01]$ su - grid
+Password: 
+Last login: Thu Feb 19 22:01:37 IST 2026
+[grid@localhost ~]$ asmcmd
+ASMCMD> ls +DATA
+ASM/
+PROD/
+PROD01/
+PROD1/
+TEST01/
+orapwasm
+ASMCMD> rm -r +DATA/PROD01
+You may delete multiple files and/or directories. 
+Are you sure? (y/n) y
+ASMCMD> rm -r +DATA/PROD1
+You may delete multiple files and/or directories. 
+Are you sure? (y/n) y
+ASMCMD> rm -r +DATA/TEST01
+You may delete multiple files and/or directories. 
+Are you sure? (y/n) y
+ASMCMD> ls +FRA
+PROD/
+PROD01/
+PROD1/
+TEST01/
+ASMCMD> rm -r +FRA/PROD01
+You may delete multiple files and/or directories. 
+Are you sure? (y/n) y
+ASMCMD> rm -r +FRA/PROD1
+You may delete multiple files and/or directories. 
+Are you sure? (y/n) y
+ASMCMD> rm -r +FRA/TEST01
+You may delete multiple files and/or directories. 
+Are you sure? (y/n) y
+ASMCMD> exit
+[grid@localhost ~]$ sqlplus / as sysasm
+
+SQL*Plus: Release 19.0.0.0.0 - Production on Thu Feb 19 23:10:17 2026
+Version 19.3.0.0.0
+
+Copyright (c) 1982, 2019, Oracle.  All rights reserved.
+
+
+Connected to:
+Oracle Database 19c Enterprise Edition Release 19.0.0.0.0 - Production
+Version 19.3.0.0.0
+
+SQL> SELECT name FROM v$asm_alias WHERE name LIKE '%PROD01%';
+
+no rows selected
+
+SQL> 
